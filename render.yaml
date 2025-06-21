@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: menga-backend
+    env: node
+    plan: free
+    buildCommand: "npm install"
+    startCommand: "node index.js"
+    envVars:
+      - key: DB_HOST
+        value: your-db-host
+      - key: DB_USER
+        value: your-db-user
+      - key: DB_PASS
+        value: your-db-password
+      - key: DB_NAME
+        value: emploi_du_temps
