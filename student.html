@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord Étudiant</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <!-- Bibliothèques pour générer des PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Tableau de bord Étudiant</h1>
+    </header>
+    <main>
+        <!-- Section : Affichage de l'emploi du temps -->
+        <section>
+            <h2>Emploi du temps</h2>
+            <table id="emploiDuTempsTable">
+                <thead>
+                    <tr>
+                        <th>Horaires</th>
+                        <th>Lundi</th>
+                        <th>Mardi</th>
+                        <th>Mercredi</th>
+                        <th>Jeudi</th>
+                        <th>Vendredi</th>
+                        <th>Samedi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Les lignes dynamiques seront ajoutées par student.js -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Section : Téléchargement en PDF -->
+        <section>
+            <h2>Télécharger l'emploi du temps</h2>
+            <button id="downloadButton">Télécharger en PDF</button>
+        </section>
+    </main>
+    <!-- Fichier JavaScript pour le tableau de bord étudiant -->
+    <script src="../js/student.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord Enseignant</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Tableau de bord Enseignant</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Emploi du temps</h2>
+            <table id="emploiDuTempsTable">
+                <thead>
+                    <tr>
+                        <th>Horaires</th>
+                        <th>Lundi</th>
+                        <th>Mardi</th>
+                        <th>Mercredi</th>
+                        <th>Jeudi</th>
+                        <th>Vendredi</th>
+                        <th>Samedi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Contenu généré dynamiquement -->
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h2>Réserver un créneau</h2>
+            <form id="reservationForm">
+                <label for="jour">Jour :</label>
+                <select id="jour" name="jour">
+                    <option value="lundi">Lundi</option>
+                    <option value="mardi">Mardi</option>
+                    <option value="mercredi">Mercredi</option>
+                    <option value="jeudi">Jeudi</option>
+                    <option value="vendredi">Vendredi</option>
+                    <option value="samedi">Samedi</option>
+                </select>
+                <label for="horaire">Horaire :</label>
+                <select id="horaire" name="horaire">
+                    <option value="8h30-10h30">8h30 - 10h30</option>
+                    <option value="10h30-12h30">10h30 - 12h30</option>
+                    <option value="14h00-16h00">14h00 - 16h00</option>
+                    <option value="16h00-18h00">16h00 - 18h00</option>
+                </select>
+                <label for="salle">Salle :</label>
+                <input type="text" id="salle" name="salle" required>
+                <label for="module">Module :</label>
+                <input type="text" id="module" name="module" required>
+                <button type="submit">Réserver</button>
+            </form>
+            <div id="feedbackMessage" style="color: red;"></div>
+        </section>
+    </main>
+    <script src="../js/teacher.js"></script>
+</body>
+</html>
+
