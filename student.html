@@ -1,48 +1,116 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tableau de bord Étudiant</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <!-- Bibliothèques pour générer des PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tableau de bord Étudiant</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+
+  <!-- Bibliothèques PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Styles intégrés (ou déplacer dans styles.css si tu préfères) -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #f0f4f8, #dfe9f3);
+      color: #333;
+    }
+
+    header {
+      background-color: #3f51b5;
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    h2 {
+      margin-top: 40px;
+      color: #3f51b5;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: white;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+
+    th {
+      background-color: #e3eaf2;
+      color: #333;
+    }
+
+    #downloadButton {
+      display: block;
+      margin: 30px auto;
+      padding: 12px 25px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    #downloadButton:hover {
+      background-color: #388e3c;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Tableau de bord Étudiant</h1>
-    </header>
-    <main>
-        <!-- Section : Affichage de l'emploi du temps -->
-        <section>
-            <h2>Emploi du temps</h2>
-            <table id="emploiDuTempsTable">
-                <thead>
-                    <tr>
-                        <th>Horaires</th>
-                        <th>Lundi</th>
-                        <th>Mardi</th>
-                        <th>Mercredi</th>
-                        <th>Jeudi</th>
-                        <th>Vendredi</th>
-                        <th>Samedi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Les lignes dynamiques seront ajoutées par student.js -->
-                </tbody>
-            </table>
-        </section>
+  <header>
+    <h1>Tableau de bord Étudiant</h1>
+  </header>
 
-        <!-- Section : Téléchargement en PDF -->
-        <section>
-            <h2>Télécharger l'emploi du temps</h2>
-            <button id="downloadButton">Télécharger en PDF</button>
-        </section>
-    </main>
-    <!-- Fichier JavaScript pour le tableau de bord étudiant -->
-    <script src="../js/student.js"></script>
+  <main>
+    <!-- Emploi du temps -->
+    <section>
+      <h2>Emploi du temps</h2>
+      <table id="emploiDuTempsTable">
+        <thead>
+          <tr>
+            <th>Horaires</th>
+            <th>Lundi</th>
+            <th>Mardi</th>
+            <th>Mercredi</th>
+            <th>Jeudi</th>
+            <th>Vendredi</th>
+            <th>Samedi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Les lignes seront ajoutées dynamiquement -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Bouton PDF -->
+    <section>
+      <h2>Télécharger l'emploi du temps</h2>
+      <button id="downloadButton">📄 Télécharger en PDF</button>
+    </section>
+  </main>
+
+  <script src="../js/student.js"></script>
 </body>
 </html>
-
