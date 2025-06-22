@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateAdminSchedule(); // Mettre à jour l'affichage
         adminAlert.textContent = 'Créneau supprimé avec succès!';
         adminAlert.style.color = 'green';
+        updateSchedule(); // Met à jour l'emploi du temps
     }
 
     // Ajouter un créneau
@@ -64,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         adminAlert.textContent = 'Créneau ajouté avec succès!';
         adminAlert.style.color = 'green';
         updateAdminSchedule(); // Mettre à jour l'affichage
+        updateSchedule(); // Met à jour l'emploi du temps
     });
 
     // Fonction de réservation pour l'enseignant
@@ -101,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Remplir l'emploi du temps avec les réservations
-        reservations.forEach((reservation, index) => {
+        reservations.forEach((reservation) => {
             const reservationDate = new Date(reservation.date);
             const dayName = reservationDate.toLocaleString('fr-FR', { weekday: 'long' });
             const time = reservation.time;
@@ -109,9 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const courseInfo = `${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`;
 
             if (time === "07:30") {
-                teacherSchedule[dayName].morning.push({ info: courseInfo, index });
+                teacherSchedule[dayName].morning.push(courseInfo);
             } else if (time === "13:00") {
-                teacherSchedule[dayName].afternoon.push({ info: courseInfo, index });
+                teacherSchedule[dayName].afternoon.push(courseInfo);
             }
         });
 
@@ -121,18 +123,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const afternoonCell = document.getElementById(`mon_${day.toLowerCase()}_apres`);
 
             morningCell.innerHTML = teacherSchedule[day].morning.length > 0 
-                ? teacherSchedule[day].morning.map(item => `${item.info} <button class="delete-button" data-index="${item.index}" data-day="${day}" data-time="morning">Supprimer</button>`).join('<br>') 
+                ? teacherSchedule[day].morning.join('<br>') 
                 : "Libre";
 
             afternoonCell.innerHTML = teacherSchedule[day].afternoon.length > 0 
-                ? teacherSchedule[day].afternoon.map(item => `${item.info} <button class="delete-button" data-index="${item.index}" data-day="${day}" data-time="afternoon">Supprimer</button>`).join('<br>') 
+                ? teacherSchedule[day].afternoon.join('<br>') 
                 : "Libre";
         }
-
-        // Ajouter des écouteurs d'événements pour les boutons de suppression
-        document.querySelectorAll('.delete-button').forEach(button => {
-            button.addEventListener('click', deleteReservation);
-        });
     }
 
     // Initialiser l'affichage
