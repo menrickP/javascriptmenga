@@ -1,23 +1,89 @@
-// script.js
-function loadTimetable(tbodyId) {
-  const tbody = document.getElementById(tbodyId);
-  if (!tbody) {
-    console.error(`Tbody with id ${tbodyId} not found`);
-    return;
-  }
-  const slots = JSON.parse(localStorage.getItem("creneaux")) || [];
-  renderTable(slots, tbody);
-}
+document.addEventListener('DOMContentLoaded', () => {
+    const reservationForm = document.getElementById('reservationForm');
+    const teacherAlert = document.getElementById('teacherAlert');
+    const teacherSchedule = {
+        "Lundi": { "morning": [], "afternoon": [] },
+        "Mardi": { "morning": [], "afternoon": [] },
+        "Mercredi": { "morning": [], "afternoon": [] },
+        "Jeudi": { "morning": [], "afternoon": [] },
+        "Vendredi": { "morning": [], "afternoon": [] },
+        "Samedi": { "morning": [], "afternoon": [] },
+    };
 
-function renderTable(slots, tbody) {
-  tbody.innerHTML = ''; // Clear current table
-  slots.forEach(slot => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${slot.day}</td>
-      <td>${slot.time}</td>
-      <td>${slot.subject}</td>
-    `;
-    tbody.appendChild(row);
-  });
-}
+    function updateSchedule() {
+        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+
+        // Reset schedule
+        for (let day in teacherSchedule) {
+            teacherSchedule[day].morning = [];
+            teacherSchedule[day].afternoon = [];
+        }
+
+        // Fill schedule with reservations
+        reservations.forEach((reservation, index) => {
+            const reservationDate = new Date(reservation.date);
+            const dayName = reservationDate.toLocaleString('fr-FR', { weekday: 'long' });
+            const time = reservation.time;
+
+            const courseInfo = `${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`;
+
+            if (time >= "07:30" && time < "11:30") {
+                teacherSchedule[dayName].morning.push({ info: courseInfo, index });
+            } else if (time >= "13:00" && time < "17:00") {
+                teacherSchedule[dayName].afternoon.push({ info: courseInfo, index });
+            }
+        });
+
+        // Update the table
+        for (let day in teacherSchedule) {
+            const morningCell = document.getElementById(`mon_${day.toLowerCase()}`);
+            const afternoonCell = document.getElementById(`mon_${day.toLowerCase()}_apres`);
+
+            morningCell.innerHTML = teacherSchedule[day].morning.length > 0 
+                ? teacherSchedule[day].morning.map(item => `${item.info} <button class="delete-button" data-index="${item.index}" data-day="${day}" data-time="morning">Supprimer</button>`).join('<br>') 
+                : "Libre";
+
+            afternoonCell.innerHTML = teacherSchedule[day].afternoon.length > 0 
+                ? teacherSchedule[day].afternoon.map(item => `${item.info} <button class="delete-button" data-index="${item.index}" data-day="${day}" data-time="afternoon">Supprimer</button>`).join('<br>') 
+                : "Libre";
+        }
+
+        // Ajouter des écouteurs d'événements pour les boutons de suppression
+        document.querySelectorAll('.delete-button').forEach(button => {
+            button.addEventListener('click', deleteReservation);
+        });
+    }
+
+    reservationForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('time').value;
+        const courseTitle = document.getElementById('courseTitle').value;
+        const teacherName = document.getElementById('teacherName').value;
+        const room = document.getElementById('room').value;
+
+        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+        const conflict = reservations.some(reservation => reservation.date === date && reservation.time === time);
+
+        if (conflict) {
+            teacherAlert.textContent = 'Ce créneau est déjà réservé!';
+            teacherAlert.style.color = 'red';
+        } else {
+            reservations.push({ date, time, courseTitle, teacherName, room });
+            localStorage.setItem('reservations', JSON.stringify(reservations));
+            teacherAlert.textContent = 'Réservation réussie!';
+            teacherAlert.style.color = 'green';
+            updateSchedule();
+        }
+    });
+
+    function deleteReservation(e) {
+        const index = e.target.getAttribute('data-index');
+        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+        reservations.splice(index, 1); // Supprimer la réservation de la liste
+        localStorage.setItem('reservations', JSON.stringify(reservations)); // Mettre à jour le stockage local
+        updateSchedule(); // Mettre à jour l'affichage
+    }
+
+    updateSchedule();
+});
