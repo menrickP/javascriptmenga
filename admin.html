@@ -8,6 +8,44 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
   <style>
+    /* NAVIGATION */
+    header {
+      background-color: #3f51b5;
+      padding: 10px 0;
+      margin-bottom: 20px;
+    }
+
+    .main-nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      gap: 30px;
+    }
+
+    .main-nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 18px;
+      padding: 8px 15px;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+    }
+
+    .main-nav a:hover,
+    .main-nav a:focus {
+      background-color: #2c3e9a;
+      outline: none;
+    }
+
+    .main-nav a.active {
+      background-color: #283593;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* PAGE STYLES */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
@@ -16,22 +54,16 @@
       color: #333;
     }
 
-    header {
-      background-color: #3f51b5;
-      color: white;
-      padding: 20px 0;
-      text-align: center;
-    }
-     <nav>
-    <a href="student.html">Étudiant</a>
-    <a href="teacher.html">Enseignant</a>
-    <a href="admin.html">Administrateur</a>
-  </nav>
-
     main {
       max-width: 900px;
-      margin: 30px auto;
+      margin: 0 auto 40px auto;
       padding: 0 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      margin-top: 0;
     }
 
     h2 {
@@ -99,7 +131,6 @@
       background-color: #e3eaf2;
     }
 
-    /* Styles pour la barre de recherche */
     #searchInput {
       width: 100%;
       padding: 10px;
@@ -109,7 +140,6 @@
       font-size: 16px;
     }
 
-    /* Message quand aucun créneau */
     #emptyMessage {
       text-align: center;
       color: #888;
@@ -119,11 +149,21 @@
   </style>
 </head>
 <body>
+
+  <!-- Barre de navigation principale -->
   <header>
-    <h1>Tableau de bord Administrateur</h1>
+    <nav class="main-nav" aria-label="Navigation principale">
+      <ul>
+        <li><a href="student.html" class="nav-link">Étudiant</a></li>
+        <li><a href="teacher.html" class="nav-link">Enseignant</a></li>
+        <li><a href="admin.html" class="nav-link active">Administrateur</a></li>
+      </ul>
+    </nav>
   </header>
 
   <main>
+    <h1>Tableau de bord Administrateur</h1>
+
     <!-- Formulaire d'ajout de créneau -->
     <section class="form-container" aria-labelledby="formTitle">
       <h2 id="formTitle">Ajouter un créneau</h2>
@@ -185,9 +225,9 @@
     <section class="actions" aria-labelledby="usersTitle">
       <h2 id="usersTitle">Utilisateurs (fictifs)</h2>
       <ul id="userList">
-        <li>👤 menrick MENGA - Étudiant</li>
-        <li>👤 MENGA MENGA  - Enseignante</li>
-        <li>👤 PR MENGA PATRICK - Administrateur</li>
+        <li>👤 SHERYDAN MENGA - Étudiant</li>
+        <li>👤 MENRICK MENGA - Enseignante</li>
+        <li>👤 MENGA MENGA PATRICK - Administrateur</li>
       </ul>
     </section>
   </main>
@@ -201,12 +241,13 @@
     // Ordre des jours pour le tri
     const daysOrder = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 
-    // Fonction pour mettre à jour l'affichage du message "Aucun créneau"
+    // Mise à jour affichage message "Aucun créneau"
     function updateEmptyMessage() {
       emptyMessage.style.display = tableBody.children.length === 0 ? 'block' : 'none';
+      emptyMessage.textContent = 'Aucun créneau ajouté.';
     }
 
-    // Fonction pour vérifier doublon (jour + heure)
+    // Vérifier doublon jour+heure
     function isDuplicate(day, time) {
       for (let row of tableBody.rows) {
         const rDay = row.cells[0].textContent.trim();
@@ -218,7 +259,7 @@
       return false;
     }
 
-    // Fonction pour trier les lignes du tableau par jour puis heure
+    // Trier tableau par jour et heure
     function sortTable() {
       const rows = Array.from(tableBody.rows);
       rows.sort((a, b) => {
@@ -227,22 +268,18 @@
         const timeA = a.cells[1].textContent.trim();
         const timeB = b.cells[1].textContent.trim();
 
-        // Trier par jour
         const dayDiff = daysOrder.indexOf(dayA) - daysOrder.indexOf(dayB);
         if (dayDiff !== 0) return dayDiff;
-
-        // Puis par heure (format HH:mm)
         return timeA.localeCompare(timeB);
       });
 
-      // Ré-injecter dans tbody
       tableBody.innerHTML = '';
       for (const row of rows) {
         tableBody.appendChild(row);
       }
     }
 
-    // Fonction d'ajout de créneau
+    // Ajout créneau
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       const day = document.getElementById('day').value;
@@ -273,26 +310,23 @@
       sortTable();
     });
 
-    // Gestion délégation suppression avec confirmation
+    // Suppression avec confirmation (délégation)
     tableBody.addEventListener('click', function(e) {
       if (e.target && e.target.classList.contains('delete-btn')) {
-        const btn = e.target;
         if (confirm('Voulez-vous vraiment supprimer ce créneau ?')) {
-          const row = btn.closest('tr');
-          row.remove();
+          e.target.closest('tr').remove();
           updateEmptyMessage();
         }
       }
     });
 
-    // Recherche dans le tableau
+    // Recherche filtrée
     searchInput.addEventListener('input', function() {
       const filter = this.value.toLowerCase();
       let visibleCount = 0;
 
       for (let row of tableBody.rows) {
         const day = row.cells[0].textContent.toLowerCase();
-        const time = row.cells[1].textContent.toLowerCase();
         const subject = row.cells[2].textContent.toLowerCase();
 
         if (day.includes(filter) || subject.includes(filter)) {
@@ -303,7 +337,6 @@
         }
       }
 
-      // Afficher message si aucun résultat visible
       emptyMessage.textContent = visibleCount === 0 ? 'Aucun créneau trouvé.' : 'Aucun créneau ajouté.';
       emptyMessage.style.display = tableBody.children.length === 0 || visibleCount === 0 ? 'block' : 'none';
     });
@@ -315,14 +348,12 @@
 
       doc.text("Créneaux réservés", 14, 15);
 
-      // On récupère uniquement les lignes visibles (non display:none)
       const visibleRows = Array.from(tableBody.rows).filter(row => row.style.display !== 'none');
       if (visibleRows.length === 0) {
         alert("Aucun créneau à exporter.");
         return;
       }
 
-      // Construire un tableau pour autoTable
       const data = visibleRows.map(row => [
         row.cells[0].textContent,
         row.cells[1].textContent,
@@ -338,12 +369,11 @@
 
       doc.save("creneaux.pdf");
     }
-
-    // Mettre à jour l'état du message vide au chargement
-    updateEmptyMessage();
-
-    // Exposer exportPDF pour l'appel onclick dans HTML
     window.exportPDF = exportPDF;
+
+    // Initialisation affichage message vide
+    updateEmptyMessage();
   </script>
+
 </body>
 </html>
