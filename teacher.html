@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tableau de bord Enseignant</title>
   <link rel="stylesheet" href="../css/styles.css" />
-
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -14,27 +13,23 @@
       background: linear-gradient(to bottom right, #f0f4f8, #dfe9f3);
       color: #333;
     }
-
     header {
       background-color: #3f51b5;
       color: white;
       padding: 20px 0;
       text-align: center;
     }
-
     main {
       max-width: 800px;
       margin: 30px auto;
       padding: 0 20px;
     }
-
     h2 {
       margin-top: 40px;
       color: #3f51b5;
       font-size: 22px;
       text-align: center;
     }
-
     .form-container {
       background-color: white;
       padding: 30px;
@@ -42,13 +37,11 @@
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-
     label {
       display: block;
       margin-bottom: 10px;
       font-weight: bold;
     }
-
     input, select {
       width: 100%;
       padding: 10px;
@@ -56,7 +49,6 @@
       border: 1px solid #ccc;
       border-radius: 6px;
     }
-
     button {
       display: inline-block;
       background-color: #3f51b5;
@@ -66,9 +58,7 @@
       border-radius: 8px;
       font-size: 16px;
       cursor: pointer;
-      transition: background 0.3s ease;
     }
-
     button:hover {
       background-color: #2c3e90;
     }
@@ -107,6 +97,16 @@
     </section>
   </main>
 
-  <script src="../js/teacher.js"></script>
+  <script>
+    const form = document.getElementById("reservationForm");
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const day = document.getElementById("day").value;
+      const time = document.getElementById("time").value;
+      const subject = document.getElementById("subject").value;
+      alert(`Créneau réservé pour ${day} à ${time} - ${subject}`);
+      form.reset();
+    });
+  </script>
 </body>
 </html>
