@@ -56,6 +56,7 @@
       margin-bottom: 15px;
       border: 1px solid #ccc;
       border-radius: 6px;
+      font-size: 16px;
     }
 
     button {
@@ -80,6 +81,7 @@
       margin-top: 15px;
       border-collapse: collapse;
       background-color: white;
+      font-size: 16px;
     }
 
     th, td {
@@ -91,6 +93,24 @@
     th {
       background-color: #e3eaf2;
     }
+
+    /* Styles pour la barre de recherche */
+    #searchInput {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    /* Message quand aucun créneau */
+    #emptyMessage {
+      text-align: center;
+      color: #888;
+      font-style: italic;
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
@@ -100,11 +120,12 @@
 
   <main>
     <!-- Formulaire d'ajout de créneau -->
-    <section class="form-container">
-      <h2>Ajouter un créneau</h2>
-      <form id="addSlotForm">
+    <section class="form-container" aria-labelledby="formTitle">
+      <h2 id="formTitle">Ajouter un créneau</h2>
+      <form id="addSlotForm" aria-describedby="formDesc">
+        <p id="formDesc" style="display:none;">Formulaire pour ajouter un créneau horaire.</p>
         <label for="day">Jour :</label>
-        <select id="day" required>
+        <select id="day" required aria-required="true" aria-label="Jour du créneau">
           <option value="">-- Choisir un jour --</option>
           <option>Lundi</option>
           <option>Mardi</option>
@@ -115,80 +136,209 @@
         </select>
 
         <label for="time">Heure :</label>
-        <input type="time" id="time" required>
+        <input type="time" id="time" required aria-required="true" aria-label="Heure du créneau">
 
         <label for="subject">Matière :</label>
-        <input type="text" id="subject" required placeholder="Ex: Physique">
+        <input type="text" id="subject" required placeholder="Ex: Physique" aria-required="true" aria-label="Matière">
 
-        <button type="submit">➕ Ajouter</button>
+        <button type="submit" aria-label="Ajouter un créneau">➕ Ajouter</button>
       </form>
     </section>
 
+    <!-- Recherche -->
+    <section class="actions" aria-labelledby="searchTitle">
+      <h2 id="searchTitle">Rechercher un créneau</h2>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Rechercher par jour ou matière..."
+        aria-label="Recherche dans les créneaux"
+      />
+    </section>
+
     <!-- Liste des créneaux -->
-    <section class="actions">
-      <h2>Liste des créneaux</h2>
-      <table id="slotsTable">
+    <section class="actions" aria-labelledby="slotsTitle">
+      <h2 id="slotsTitle">Liste des créneaux</h2>
+      <table id="slotsTable" role="grid" aria-describedby="emptyMessage">
         <thead>
           <tr>
-            <th>Jour</th>
-            <th>Heure</th>
-            <th>Matière</th>
-            <th>Action</th>
+            <th scope="col">Jour</th>
+            <th scope="col">Heure</th>
+            <th scope="col">Matière</th>
+            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
           <!-- Créneaux ajoutés dynamiquement -->
         </tbody>
       </table>
-      <button onclick="exportPDF()">📤 Exporter en PDF</button>
+      <p id="emptyMessage" style="display:none;">Aucun créneau ajouté.</p>
+      <button onclick="exportPDF()" aria-label="Exporter la liste des créneaux en PDF">📤 Exporter en PDF</button>
     </section>
 
     <!-- Utilisateurs fictifs -->
-    <section class="actions">
-      <h2>Utilisateurs (fictifs)</h2>
+    <section class="actions" aria-labelledby="usersTitle">
+      <h2 id="usersTitle">Utilisateurs (fictifs)</h2>
       <ul id="userList">
-        <li>👤 MENRICK MENGA - Étudiant</li>
-        <li>👤 MENGA MENGA P - Enseignante</li>
-        <li>👤 MENGA CHANCE SHERYDAN - Administrateur</li>
+        <li>👤 Jean Dupont - Étudiant</li>
+        <li>👤 Marie Yao - Enseignante</li>
+        <li>👤 Admin Système - Administrateur</li>
       </ul>
     </section>
   </main>
 
-  <!-- Script JavaScript intégré -->
   <script>
     const form = document.getElementById('addSlotForm');
     const tableBody = document.querySelector('#slotsTable tbody');
+    const searchInput = document.getElementById('searchInput');
+    const emptyMessage = document.getElementById('emptyMessage');
 
+    // Ordre des jours pour le tri
+    const daysOrder = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+
+    // Fonction pour mettre à jour l'affichage du message "Aucun créneau"
+    function updateEmptyMessage() {
+      emptyMessage.style.display = tableBody.children.length === 0 ? 'block' : 'none';
+    }
+
+    // Fonction pour vérifier doublon (jour + heure)
+    function isDuplicate(day, time) {
+      for (let row of tableBody.rows) {
+        const rDay = row.cells[0].textContent.trim();
+        const rTime = row.cells[1].textContent.trim();
+        if (rDay === day && rTime === time) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // Fonction pour trier les lignes du tableau par jour puis heure
+    function sortTable() {
+      const rows = Array.from(tableBody.rows);
+      rows.sort((a, b) => {
+        const dayA = a.cells[0].textContent.trim();
+        const dayB = b.cells[0].textContent.trim();
+        const timeA = a.cells[1].textContent.trim();
+        const timeB = b.cells[1].textContent.trim();
+
+        // Trier par jour
+        const dayDiff = daysOrder.indexOf(dayA) - daysOrder.indexOf(dayB);
+        if (dayDiff !== 0) return dayDiff;
+
+        // Puis par heure (format HH:mm)
+        return timeA.localeCompare(timeB);
+      });
+
+      // Ré-injecter dans tbody
+      tableBody.innerHTML = '';
+      for (const row of rows) {
+        tableBody.appendChild(row);
+      }
+    }
+
+    // Fonction d'ajout de créneau
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       const day = document.getElementById('day').value;
       const time = document.getElementById('time').value;
-      const subject = document.getElementById('subject').value;
+      const subject = document.getElementById('subject').value.trim();
+
+      if (!day || !time || !subject) {
+        alert("Veuillez remplir tous les champs.");
+        return;
+      }
+
+      if (isDuplicate(day, time)) {
+        alert(`Un créneau existe déjà pour ${day} à ${time}.`);
+        return;
+      }
 
       const row = document.createElement('tr');
-      row.innerHTML = \`
-        <td>\${day}</td>
-        <td>\${time}</td>
-        <td>\${subject}</td>
-        <td><button onclick="deleteRow(this)">❌ Supprimer</button></td>
-      \`;
+      row.innerHTML = `
+        <td>${day}</td>
+        <td>${time}</td>
+        <td>${subject}</td>
+        <td><button aria-label="Supprimer ce créneau" class="delete-btn">❌ Supprimer</button></td>
+      `;
       tableBody.appendChild(row);
 
       form.reset();
+      updateEmptyMessage();
+      sortTable();
     });
 
-    function deleteRow(btn) {
-      const row = btn.closest('tr');
-      row.remove();
-    }
+    // Gestion délégation suppression avec confirmation
+    tableBody.addEventListener('click', function(e) {
+      if (e.target && e.target.classList.contains('delete-btn')) {
+        const btn = e.target;
+        if (confirm('Voulez-vous vraiment supprimer ce créneau ?')) {
+          const row = btn.closest('tr');
+          row.remove();
+          updateEmptyMessage();
+        }
+      }
+    });
 
+    // Recherche dans le tableau
+    searchInput.addEventListener('input', function() {
+      const filter = this.value.toLowerCase();
+      let visibleCount = 0;
+
+      for (let row of tableBody.rows) {
+        const day = row.cells[0].textContent.toLowerCase();
+        const time = row.cells[1].textContent.toLowerCase();
+        const subject = row.cells[2].textContent.toLowerCase();
+
+        if (day.includes(filter) || subject.includes(filter)) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      }
+
+      // Afficher message si aucun résultat visible
+      emptyMessage.textContent = visibleCount === 0 ? 'Aucun créneau trouvé.' : 'Aucun créneau ajouté.';
+      emptyMessage.style.display = tableBody.children.length === 0 || visibleCount === 0 ? 'block' : 'none';
+    });
+
+    // Export PDF
     function exportPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
+
       doc.text("Créneaux réservés", 14, 15);
-      doc.autoTable({ html: '#slotsTable', startY: 20 });
+
+      // On récupère uniquement les lignes visibles (non display:none)
+      const visibleRows = Array.from(tableBody.rows).filter(row => row.style.display !== 'none');
+      if (visibleRows.length === 0) {
+        alert("Aucun créneau à exporter.");
+        return;
+      }
+
+      // Construire un tableau pour autoTable
+      const data = visibleRows.map(row => [
+        row.cells[0].textContent,
+        row.cells[1].textContent,
+        row.cells[2].textContent,
+      ]);
+
+      doc.autoTable({
+        head: [['Jour', 'Heure', 'Matière']],
+        body: data,
+        startY: 20,
+        styles: { halign: 'center' },
+      });
+
       doc.save("creneaux.pdf");
     }
+
+    // Mettre à jour l'état du message vide au chargement
+    updateEmptyMessage();
+
+    // Exposer exportPDF pour l'appel onclick dans HTML
+    window.exportPDF = exportPDF;
   </script>
 </body>
 </html>
