@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const addSlotForm = document.getElementById('addSlotForm');
+    const adminAlert = document.getElementById('adminAlert');
+    const adminSchedule = document.getElementById('adminSchedule');
     const reservationForm = document.getElementById('reservationForm');
     const teacherAlert = document.getElementById('teacherAlert');
     const teacherSchedule = {
@@ -10,50 +13,60 @@ document.addEventListener('DOMContentLoaded', () => {
         "Samedi": { "morning": [], "afternoon": [] },
     };
 
-    function updateSchedule() {
+    // Fonction pour afficher les créneaux réservés dans admin.html
+    function updateAdminSchedule() {
         const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+        adminSchedule.innerHTML = ''; // Réinitialiser l'affichage
 
-        // Reset schedule
-        for (let day in teacherSchedule) {
-            teacherSchedule[day].morning = [];
-            teacherSchedule[day].afternoon = [];
+        if (reservations.length === 0) {
+            adminSchedule.innerHTML = '<p>Aucun créneau réservé.</p>';
+            return;
         }
 
-        // Fill schedule with reservations
         reservations.forEach((reservation, index) => {
-            const reservationDate = new Date(reservation.date);
-            const dayName = reservationDate.toLocaleString('fr-FR', { weekday: 'long' });
-            const time = reservation.time;
-
-            const courseInfo = `${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`;
-
-            if (time >= "07:30" && time < "11:30") {
-                teacherSchedule[dayName].morning.push({ info: courseInfo, index });
-            } else if (time >= "13:00" && time < "17:00") {
-                teacherSchedule[dayName].afternoon.push({ info: courseInfo, index });
-            }
+            const reservationElement = document.createElement('div');
+            reservationElement.className = 'alert alert-info d-flex justify-content-between align-items-center';
+            reservationElement.innerHTML = `
+                <div>
+                    ${reservation.date} - ${reservation.time}: ${reservation.courseTitle} (${reservation.teacherName}, ${reservation.room})
+                </div>
+                <button class="btn btn-danger btn-sm delete-slot" data-index="${index}">Supprimer</button>
+            `;
+            adminSchedule.appendChild(reservationElement);
         });
 
-        // Update the table
-        for (let day in teacherSchedule) {
-            const morningCell = document.getElementById(`mon_${day.toLowerCase()}`);
-            const afternoonCell = document.getElementById(`mon_${day.toLowerCase()}_apres`);
-
-            morningCell.innerHTML = teacherSchedule[day].morning.length > 0 
-                ? teacherSchedule[day].morning.map(item => `${item.info} <button class="delete-button" data-index="${item.index}" data-day="${day}" data-time="morning">Supprimer</button>`).join('<br>') 
-                : "Libre";
-
-            afternoonCell.innerHTML = teacherSchedule[day].afternoon.length > 0 
-                ? teacherSchedule[day].afternoon.map(item => `${item.info} <button class="delete-button" data-index="${item.index}" data-day="${day}" data-time="afternoon">Supprimer</button>`).join('<br>') 
-                : "Libre";
-        }
-
-        // Ajouter des écouteurs d'événements pour les boutons de suppression
-        document.querySelectorAll('.delete-button').forEach(button => {
-            button.addEventListener('click', deleteReservation);
+        // Ajouter l'écouteur d'événements pour les boutons de suppression
+        document.querySelectorAll('.delete-slot').forEach(button => {
+            button.addEventListener('click', deleteSlot);
         });
     }
 
+    // Fonction pour supprimer un créneau
+    function deleteSlot(e) {
+        const index = e.target.getAttribute('data-index');
+        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+        reservations.splice(index, 1); // Supprimer la réservation de la liste
+        localStorage.setItem('reservations', JSON.stringify(reservations)); // Mettre à jour le stockage local
+        updateAdminSchedule(); // Mettre à jour l'affichage
+        adminAlert.textContent = 'Créneau supprimé avec succès!';
+        adminAlert.style.color = 'green';
+    }
+
+    // Ajouter un créneau
+    addSlotForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const date = document.getElementById('slotDate').value;
+        const time = document.getElementById('slotTime').value;
+
+        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+        reservations.push({ date, time });
+        localStorage.setItem('reservations', JSON.stringify(reservations));
+        adminAlert.textContent = 'Créneau ajouté avec succès!';
+        adminAlert.style.color = 'green';
+        updateAdminSchedule(); // Mettre à jour l'affichage
+    });
+
+    // Fonction de réservation pour l'enseignant
     reservationForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const date = document.getElementById('date').value;
@@ -77,94 +90,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    function deleteReservation(e) {
-        const index = e.target.getAttribute('data-index');
+    // Fonction pour mettre à jour l'emploi du temps de l'enseignant
+    function updateSchedule() {
         const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-        reservations.splice(index, 1); // Supprimer la réservation de la liste
-        localStorage.setItem('reservations', JSON.stringify(reservations)); // Mettre à jour le stockage local
-        updateSchedule(); // Mettre à jour l'affichage
+
+        // Réinitialiser l'emploi du temps
+        for (let day in teacherSchedule) {
+            teacherSchedule[day].morning = [];
+            teacherSchedule[day].afternoon = [];
+        }
+
+        // Remplir l'emploi du temps avec les réservations
+        reservations.forEach((reservation, index) => {
+            const reservationDate = new Date(reservation.date);
+            const dayName = reservationDate.toLocaleString('fr-FR', { weekday: 'long' });
+            const time = reservation.time;
+
+            const courseInfo = `${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`;
+
+            if (time === "07:30") {
+                teacherSchedule[dayName].morning.push({ info: courseInfo, index });
+            } else if (time === "13:00") {
+                teacherSchedule[dayName].afternoon.push({ info: courseInfo, index });
+            }
+        });
+
+        // Mettre à jour le tableau
+        for (let day in teacherSchedule) {
+            const morningCell = document.getElementById(`mon_${day.toLowerCase()}`);
+            const afternoonCell = document.getElementById(`mon_${day.toLowerCase()}_apres`);
+
+            morningCell.innerHTML = teacherSchedule[day].morning.length > 0 
+                ? teacherSchedule[day].morning.map(item => `${item.info} <button class="delete-button" data-index="${item.index}" data-day="${day}" data-time="morning">Supprimer</button>`).join('<br>') 
+                : "Libre";
+
+            afternoonCell.innerHTML = teacherSchedule[day].afternoon.length > 0 
+                ? teacherSchedule[day].afternoon.map(item => `${item.info} <button class="delete-button" data-index="${item.index}" data-day="${day}" data-time="afternoon">Supprimer</button>`).join('<br>') 
+                : "Libre";
+        }
+
+        // Ajouter des écouteurs d'événements pour les boutons de suppression
+        document.querySelectorAll('.delete-button').forEach(button => {
+            button.addEventListener('click', deleteReservation);
+        });
     }
 
-    document.getElementById('downloadPdf').addEventListener('click', () => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        doc.text("Emploi du Temps", 20, 20);
-        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-        
-        let y = 30;
-        const days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-
-        days.forEach(day => {
-            doc.text(day, 20, y);
-            y += 10;
-
-            const morningReservations = reservations.filter(reservation => {
-                const reservationDate = new Date(reservation.date);
-                return reservationDate.toLocaleString('fr-FR', { weekday: 'long' }) === day && reservation.time >= "07:30" && reservation.time < "11:30";
-            });
-
-            const afternoonReservations = reservations.filter(reservation => {
-                const reservationDate = new Date(reservation.date);
-                return reservationDate.toLocaleString('fr-FR', { weekday: 'long' }) === day && reservation.time >= "13:00" && reservation.time < "17:00";
-            });
-
-            doc.text("1ère Période:", 20, y);
-            morningReservations.forEach(reservation => {
-                doc.text(`${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`, 30, y += 10);
-            });
-            y += 10;
-
-            doc.text("2ème Période:", 20, y);
-            afternoonReservations.forEach(reservation => {
-                doc.text(`${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`, 30, y += 10);
-            });
-            y += 10;
-        });
-
-        doc.save("emploi_du_temps.pdf");
-    });
-
-    // Logique pour l'étudiant
-    document.getElementById('downloadStudentPdf').addEventListener('click', () => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        doc.text("Mon Emploi du Temps", 20, 20);
-        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-        
-        let y = 30;
-        const days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-
-        days.forEach(day => {
-            doc.text(day, 20, y);
-            y += 10;
-
-            const morningReservations = reservations.filter(reservation => {
-                const reservationDate = new Date(reservation.date);
-                return reservationDate.toLocaleString('fr-FR', { weekday: 'long' }) === day && reservation.time >= "07:30" && reservation.time < "11:30";
-            });
-
-            const afternoonReservations = reservations.filter(reservation => {
-                const reservationDate = new Date(reservation.date);
-                return reservationDate.toLocaleString('fr-FR', { weekday: 'long' }) === day && reservation.time >= "13:00" && reservation.time < "17:00";
-            });
-
-            doc.text("1ère Période:", 20, y);
-            morningReservations.forEach(reservation => {
-                doc.text(`${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`, 30, y += 10);
-            });
-            y += 10;
-
-            doc.text("2ème Période:", 20, y);
-            afternoonReservations.forEach(reservation => {
-                doc.text(`${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`, 30, y += 10);
-            });
-            y += 10;
-        });
-
-        doc.save("emploi_du_temps_etudiant.pdf");
-    });
-
+    // Initialiser l'affichage
+    updateAdminSchedule();
     updateSchedule();
 });
