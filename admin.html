@@ -1,56 +1,84 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tableau de bord Administrateur</title>
-    <link rel="stylesheet" href="../css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tableau de bord Administrateur</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #f0f4f8, #dfe9f3);
+      color: #333;
+    }
+
+    header {
+      background-color: #3f51b5;
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    h2 {
+      margin-top: 40px;
+      color: #3f51b5;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    .admin-actions {
+      background-color: white;
+      padding: 30px;
+      margin-top: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-actions button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .admin-actions button:hover {
+      background-color: #388e3c;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Tableau de bord Administrateur</h1>
-    </header>
-    <main>
-        <!-- Section : Gestion des utilisateurs -->
-        <section>
-            <h2>Gestion des utilisateurs</h2>
-            <table id="userTable">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nom d'utilisateur</th>
-                        <th>Rôle</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Contenu généré dynamiquement -->
-                </tbody>
-            </table>
-            <button id="addUserButton">Ajouter un utilisateur</button>
-        </section>
+  <header>
+    <h1>Tableau de bord Administrateur</h1>
+  </header>
 
-        <!-- Section : Gestion des créneaux réservés -->
-        <section>
-            <h2>Créneaux réservés</h2>
-            <table id="reservedSlotsTable">
-                <thead>
-                    <tr>
-                        <th>Jour</th>
-                        <th>Horaire</th>
-                        <th>Module</th>
-                        <th>Salle</th>
-                        <th>Enseignant</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Contenu généré dynamiquement -->
-                </tbody>
-            </table>
-        </section>
-    </main>
-    <script src="../js/admin.js"></script>
+  <main>
+    <section>
+      <h2>Gestion de la plateforme</h2>
+      <div class="admin-actions">
+        <button onclick="alert('Créneau ajouté')">➕ Ajouter un créneau</button>
+        <button onclick="alert('Créneaux supprimés')">🗑 Supprimer un créneau</button>
+        <button onclick="alert('Utilisateurs consultés')">👥 Gérer les utilisateurs</button>
+        <button onclick="alert('Export lancé')">📤 Exporter les données</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/admin.js"></script>
 </body>
 </html>
-
