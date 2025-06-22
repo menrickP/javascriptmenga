@@ -1,62 +1,52 @@
-console.log('Chargement du tableau de bord étudiant...');
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tableau de bord Étudiant</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="script.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Tableau de bord Étudiant</h1>
+  </header>
+  <nav>
+    <a href="student.html" class="active">Étudiant</a>
+    <a href="teacher.html">Enseignant</a>
+    <a href="admin.html">Administrateur</a>
+  </nav>
+  <main>
+    <h2>Emploi du temps</h2>
+    <table id="emploiTable">
+      <thead>
+        <tr>
+          <th>Jour</th>
+          <th>Heure</th>
+          <th>Matière</th>
+        </tr>
+      </thead>
+      <tbody id="studentTableBody"></tbody>
+    </table>
+    <button id="downloadButton">📄 Télécharger en PDF</button>
+  </main>
 
-// Fonction pour afficher l'emploi du temps
-function loadEmploiDuTemps() {
-    fetch('http://localhost:3000/api/emploi-du-temps')
-        .then(response => response.json())
-        .then(data => {
-            const tableBody = document.querySelector('#emploiDuTempsTable tbody');
-            tableBody.innerHTML = ''; // Réinitialise le tableau
+  <script>
+    const tbodyId = "studentTableBody";
 
-            const horaires = ['8h30-10h30', '10h30-12h30', '14h00-16h00', '16h00-18h00'];
-            const jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
-
-            horaires.forEach(horaire => {
-                const row = document.createElement('tr');
-                const horaireCell = document.createElement('td');
-                horaireCell.textContent = horaire;
-                row.appendChild(horaireCell);
-
-                jours.forEach(jour => {
-                    const cell = document.createElement('td');
-                    const slot = data.find(item => item.jour === jour && item.horaire === horaire);
-
-                    if (slot && slot.enseignant_id) {
-                        cell.textContent = `${slot.module} (${slot.salle})`;
-                        cell.style.backgroundColor = '#ccc'; // Créneau réservé
-                    } else {
-                        cell.textContent = 'Libre';
-                        cell.style.backgroundColor = '#a8e6a1'; // Créneau libre
-                    }
-
-                    row.appendChild(cell);
-                });
-
-                tableBody.appendChild(row);
-            });
-        })
-        .catch(err => {
-            console.error('Erreur lors de la récupération des données :', err);
-        });
-}
-
-// Fonction pour télécharger l'emploi du temps en PDF
-function downloadEmploiDuTempsPDF() {
-    const table = document.getElementById('emploiDuTempsTable');
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF();
-
-    pdf.text('Emploi du temps', 10, 10); // Titre du PDF
-    pdf.autoTable({ html: table }); // Convertit le tableau HTML en tableau PDF
-    pdf.save('emploi_du_temps.pdf'); // Télécharge le fichier PDF
-}
-
-// Initialisation au chargement de la page
-document.addEventListener('DOMContentLoaded', () => {
-    loadEmploiDuTemps(); // Charge et affiche l'emploi du temps
-
-    document.getElementById('downloadButton').addEventListener('click', () => {
-        downloadEmploiDuTempsPDF(); // Télécharge le PDF
+    document.addEventListener('DOMContentLoaded', function() {
+      loadTimetable(tbodyId); // Initial load
     });
-});
 
+    document.getElementById("downloadButton").addEventListener("click", () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text("Emploi du temps", 14, 15);
+      doc.autoTable({ html: "#emploiTable", startY: 20 });
+      doc.save("emploi_du_temps.pdf");
+    });
+  </script>
+</body>
+</html>
