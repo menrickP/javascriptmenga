@@ -1,56 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tableau de bord Enseignant</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #eef1f7;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: #3f51b5;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    nav {
-      background: #283593;
-      text-align: center;
-      padding: 10px 0;
-    }
-    nav a {
-      color: white;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    main {
-      max-width: 600px;
-      margin: 30px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-    }
-    label, select, input {
-      display: block;
-      width: 100%;
-      margin-bottom: 15px;
-      font-size: 16px;
-    }
-    button {
-      background-color: #3f51b5;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
+    <script src="script.js"></script>
 </head>
 <body>
   <header>
@@ -58,31 +13,51 @@
   </header>
   <nav>
     <a href="student.html">Étudiant</a>
-    <a href="teacher.html">Enseignant</a>
+    <a href="teacher.html" class="active">Enseignant</a>
     <a href="admin.html">Administrateur</a>
   </nav>
   <main>
-    <h2>Réserver un créneau</h2>
-    <form id="reservationForm">
-      <label for="day">Jour :</label>
-      <select id="day" required>
-        <option value="">-- Choisir --</option>
-        <option>Lundi</option>
-        <option>Mardi</option>
-        <option>Mercredi</option>
-        <option>Jeudi</option>
-        <option>Vendredi</option>
-        <option>Samedi</option>
-      </select>
-      <label for="time">Heure :</label>
-      <input type="time" id="time" required>
-      <label for="subject">Matière :</label>
-      <input type="text" id="subject" required placeholder="Ex: Mathématiques">
-      <button type="submit">Réserver</button>
-    </form>
+    <section>
+      <h2>Réserver un créneau</h2>
+      <form id="reservationForm">
+        <label for="day">Jour :</label>
+        <select id="day" required>
+          <option value="">-- Choisir --</option>
+          <option>Lundi</option>
+          <option>Mardi</option>
+          <option>Jeudi</option>
+          <option>Vendredi</option>
+        </select>
+        <label for="time">Heure :</label>
+        <input type="time" id="time" required>
+        <label for="subject">Matière :</label>
+        <input type="text" id="subject" required placeholder="Ex: Mathématiques">
+        <button type="submit">Réserver</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Emploi du temps</h2>
+      <table id="emploiTable">
+        <thead>
+          <tr>
+            <th>Jour</th>
+            <th>Heure</th>
+            <th>Matière</th>
+          </tr>
+        </thead>
+        <tbody id="teacherTableBody"></tbody>
+      </table>
+    </section>
   </main>
+
   <script>
     const form = document.getElementById("reservationForm");
+    const tbodyId = "teacherTableBody"; // ID of the tbody in teacher.html
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTimetable(tbodyId);
+    });
 
     form.addEventListener("submit", function(e) {
       e.preventDefault();
@@ -90,15 +65,19 @@
       const time = document.getElementById("time").value;
       const subject = document.getElementById("subject").value;
 
-      // Charger depuis localStorage
-      const data = JSON.parse(localStorage.getItem("creneaux") || "[]");
+      const slots = JSON.parse(localStorage.getItem("creneaux")) || [];
+      const isDuplicate = slots.some(slot => slot.day === day && slot.time === time);
 
-      // Ajouter le nouveau créneau
-      data.push({ day, time, subject });
+      if (isDuplicate) {
+        alert(`Le créneau pour ${day} à ${time} est déjà réservé.`);
+        return;
+      }
 
-      // Sauvegarder
-      localStorage.setItem("creneaux", JSON.stringify(data));
+      const newSlot = { day, time, subject };
+      slots.push(newSlot);
+      localStorage.setItem("creneaux", JSON.stringify(slots));
 
+      loadTimetable(tbodyId); // Refresh the table
       alert("Créneau réservé !");
       form.reset();
     });
