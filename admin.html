@@ -1,127 +1,88 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tableau de bord Administrateur</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-  <script src="script.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrateur - SGET</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #eef2f3;
+            color: #333;
+        }
+        header {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        section {
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin: 10px 0 5px;
+        }
+        input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #218838;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #4CAF50;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Tableau de bord Administrateur</h1>
-  </header>
-  <nav>
-    <a href="student.html">Étudiant</a>
-    <a href="teacher.html">Enseignant</a>
-    <a href="admin.html" class="active">Administrateur</a>
-  </nav>
-  <main>
-    <section>
-      <h2>Ajouter un créneau</h2>
-      <form id="addSlotForm">
-        <label for="day">Jour :</label>
-        <select id="day" required>
-          <option value="">-- Choisir un jour --</option>
-          <option>Lundi</option>
-          <option>Mardi</option>
-          <option>Mercredi</option>
-          <option>Jeudi</option>
-          <option>Vendredi</option>
-        </select>
-        <label for="time">Heure :</label>
-        <input type="time" id="time" required>
-        <label for="subject">Matière :</label>
-        <input type="text" id="subject" required placeholder="Ex: Physique">
-        <button type="submit">➕ Ajouter</button>
-      </form>
-    </section>
-
-    <section>
-      <h2>Liste des créneaux</h2>
-      <table id="slotsTable">
-        <thead>
-          <tr>
-            <th>Jour</th>
-            <th>Heure</th>
-            <th>Matière</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="adminTableBody"></tbody>
-      </table>
-      <p id="emptyMessage" style="display:none;">Aucun créneau ajouté.</p>
-      <button onclick="exportPDF()">📤 Exporter en PDF</button>
-    </section>
-  </main>
-
-  <script>
-    const form = document.getElementById('addSlotForm');
-    const tableBodyId = 'adminTableBody'; // ID of the tbody in admin.html
-    const emptyMessage = document.getElementById('emptyMessage');
-
-    function updateEmptyMessage() {
-      const tableBody = document.getElementById(tableBodyId);
-      emptyMessage.style.display = tableBody.children.length === 0 ? 'block' : 'none';
-      emptyMessage.textContent = 'Aucun créneau ajouté.';
-    }
-
-    function addAdminSlot(slot) {
-      const tableBody = document.getElementById(tableBodyId);
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${slot.day}</td>
-        <td>${slot.time}</td>
-        <td>${slot.subject}</td>
-        <td><button class="delete-btn">❌ Supprimer</button></td>
-      `;
-      tableBody.appendChild(row);
-    }
-
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const day = document.getElementById('day').value;
-      const time = document.getElementById('time').value;
-      const subject = document.getElementById('subject').value.trim();
-
-      const slots = JSON.parse(localStorage.getItem('creneaux')) || [];
-      const isDuplicate = slots.some(slot => slot.day === day && slot.time === time);
-
-      if (isDuplicate) {
-        alert(`Un créneau existe déjà pour ${day} à ${time}.`);
-        return;
-      }
-
-      const newSlot = { day, time, subject };
-      slots.push(newSlot);
-      localStorage.setItem('creneaux', JSON.stringify(slots));
-
-      addAdminSlot(newSlot);
-      loadTimetable(tableBodyId); // Refresh the table
-      form.reset();
-      updateEmptyMessage();
-    });
-
-    document.getElementById('slotsTable').addEventListener('click', function(e) {
-      if (e.target.classList.contains('delete-btn')) {
-        const row = e.target.closest('tr');
-        const day = row.cells[0].textContent;
-        const time = row.cells[1].textContent;
-
-        let slots = JSON.parse(localStorage.getItem('creneaux')) || [];
-        slots = slots.filter(slot => !(slot.day === day && slot.time === time));
-        localStorage.setItem('creneaux', JSON.stringify(slots));
-
-        row.remove();
-        loadTimetable(tableBodyId); // Refresh the table
-        updateEmptyMessage();
-      }
-    });
-
-    loadTimetable(tableBodyId); // Initial load
-    updateEmptyMessage();
-  </script>
+    <header>
+        <h1>Gestion des Emplois du Temps - Administrateur</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Ajouter un Créneau</h2>
+            <form id="addSlotForm">
+                <label for="slotDate">Date :</label>
+                <input type="date" id="slotDate" required>
+                <label for="slotTime">Heure :</label>
+                <input type="time" id="slotTime" required>
+                <button type="submit">Ajouter Créneau</button>
+            </form>
+            <div id="adminAlert"></div>
+        </section>
+        <section>
+            <h2>Créneaux Réservés</h2>
+            <div id="adminSchedule"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Système de Gestion des Emplois du Temps</p>
+    </footer>
+    <script src="data.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
