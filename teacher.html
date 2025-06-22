@@ -4,63 +4,51 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tableau de bord Enseignant</title>
-  <link rel="stylesheet" href="../css/styles.css" />
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: Arial, sans-serif;
+      background: #eef1f7;
       margin: 0;
       padding: 0;
-      background: linear-gradient(to bottom right, #f0f4f8, #dfe9f3);
-      color: #333;
     }
     header {
       background-color: #3f51b5;
       color: white;
-      padding: 20px 0;
+      padding: 20px;
       text-align: center;
     }
-    main {
-      max-width: 800px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-    h2 {
-      margin-top: 40px;
-      color: #3f51b5;
-      font-size: 22px;
+    nav {
+      background: #283593;
       text-align: center;
+      padding: 10px 0;
     }
-    .form-container {
-      background-color: white;
-      padding: 30px;
-      margin-top: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    label {
-      display: block;
-      margin-bottom: 10px;
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
       font-weight: bold;
     }
-    input, select {
+    main {
+      max-width: 600px;
+      margin: 30px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+    }
+    label, select, input {
+      display: block;
       width: 100%;
-      padding: 10px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 16px;
     }
     button {
-      display: inline-block;
       background-color: #3f51b5;
       color: white;
-      padding: 12px 24px;
       border: none;
-      border-radius: 8px;
+      padding: 10px 20px;
       font-size: 16px;
+      border-radius: 6px;
       cursor: pointer;
-    }
-    button:hover {
-      background-color: #2c3e90;
     }
   </style>
 </head>
@@ -68,43 +56,50 @@
   <header>
     <h1>Tableau de bord Enseignant</h1>
   </header>
-
+  <nav>
+    <a href="student.html">Étudiant</a>
+    <a href="teacher.html">Enseignant</a>
+    <a href="admin.html">Administrateur</a>
+  </nav>
   <main>
-    <section>
-      <h2>Réservation d'un créneau</h2>
-      <div class="form-container">
-        <form id="reservationForm">
-          <label for="day">Jour :</label>
-          <select id="day" required>
-            <option value="">-- Choisir un jour --</option>
-            <option>Lundi</option>
-            <option>Mardi</option>
-            <option>Mercredi</option>
-            <option>Jeudi</option>
-            <option>Vendredi</option>
-            <option>Samedi</option>
-          </select>
-
-          <label for="time">Heure :</label>
-          <input type="time" id="time" required>
-
-          <label for="subject">Matière :</label>
-          <input type="text" id="subject" placeholder="Ex: Mathématiques" required>
-
-          <button type="submit">Réserver</button>
-        </form>
-      </div>
-    </section>
+    <h2>Réserver un créneau</h2>
+    <form id="reservationForm">
+      <label for="day">Jour :</label>
+      <select id="day" required>
+        <option value="">-- Choisir --</option>
+        <option>Lundi</option>
+        <option>Mardi</option>
+        <option>Mercredi</option>
+        <option>Jeudi</option>
+        <option>Vendredi</option>
+        <option>Samedi</option>
+      </select>
+      <label for="time">Heure :</label>
+      <input type="time" id="time" required>
+      <label for="subject">Matière :</label>
+      <input type="text" id="subject" required placeholder="Ex: Mathématiques">
+      <button type="submit">Réserver</button>
+    </form>
   </main>
-
   <script>
     const form = document.getElementById("reservationForm");
+
     form.addEventListener("submit", function(e) {
       e.preventDefault();
       const day = document.getElementById("day").value;
       const time = document.getElementById("time").value;
       const subject = document.getElementById("subject").value;
-      alert(`Créneau réservé pour ${day} à ${time} - ${subject}`);
+
+      // Charger depuis localStorage
+      const data = JSON.parse(localStorage.getItem("creneaux") || "[]");
+
+      // Ajouter le nouveau créneau
+      data.push({ day, time, subject });
+
+      // Sauvegarder
+      localStorage.setItem("creneaux", JSON.stringify(data));
+
+      alert("Créneau réservé !");
       form.reset();
     });
   </script>
