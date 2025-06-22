@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tableau de bord Administrateur</title>
   <link rel="stylesheet" href="../css/styles.css" />
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -35,7 +36,7 @@
       text-align: center;
     }
 
-    .admin-actions {
+    .form-container, .actions {
       background-color: white;
       padding: 30px;
       margin-top: 20px;
@@ -43,22 +44,52 @@
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
-    .admin-actions button {
+    label {
       display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input, select {
       width: 100%;
-      padding: 15px;
+      padding: 10px;
       margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      display: inline-block;
       background-color: #4CAF50;
       color: white;
-      font-size: 16px;
+      padding: 12px 24px;
+      margin: 5px 0;
       border: none;
       border-radius: 8px;
+      font-size: 16px;
       cursor: pointer;
       transition: background 0.3s ease;
     }
 
-    .admin-actions button:hover {
+    button:hover {
       background-color: #388e3c;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 15px;
+      border-collapse: collapse;
+      background-color: white;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #e3eaf2;
     }
   </style>
 </head>
@@ -68,17 +99,96 @@
   </header>
 
   <main>
-    <section>
-      <h2>Gestion de la plateforme</h2>
-      <div class="admin-actions">
-        <button onclick="alert('Créneau ajouté')">➕ Ajouter un créneau</button>
-        <button onclick="alert('Créneaux supprimés')">🗑 Supprimer un créneau</button>
-        <button onclick="alert('Utilisateurs consultés')">👥 Gérer les utilisateurs</button>
-        <button onclick="alert('Export lancé')">📤 Exporter les données</button>
-      </div>
+    <!-- Formulaire d'ajout de créneau -->
+    <section class="form-container">
+      <h2>Ajouter un créneau</h2>
+      <form id="addSlotForm">
+        <label for="day">Jour :</label>
+        <select id="day" required>
+          <option value="">-- Choisir un jour --</option>
+          <option>Lundi</option>
+          <option>Mardi</option>
+          <option>Mercredi</option>
+          <option>Jeudi</option>
+          <option>Vendredi</option>
+          <option>Samedi</option>
+        </select>
+
+        <label for="time">Heure :</label>
+        <input type="time" id="time" required>
+
+        <label for="subject">Matière :</label>
+        <input type="text" id="subject" required placeholder="Ex: Physique">
+
+        <button type="submit">➕ Ajouter</button>
+      </form>
+    </section>
+
+    <!-- Liste des créneaux -->
+    <section class="actions">
+      <h2>Liste des créneaux</h2>
+      <table id="slotsTable">
+        <thead>
+          <tr>
+            <th>Jour</th>
+            <th>Heure</th>
+            <th>Matière</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Créneaux ajoutés dynamiquement -->
+        </tbody>
+      </table>
+      <button onclick="exportPDF()">📤 Exporter en PDF</button>
+    </section>
+
+    <!-- Utilisateurs fictifs -->
+    <section class="actions">
+      <h2>Utilisateurs (fictifs)</h2>
+      <ul id="userList">
+        <li>👤 Jean Dupont - Étudiant</li>
+        <li>👤 Marie Yao - Enseignante</li>
+        <li>👤 Admin Système - Administrateur</li>
+      </ul>
     </section>
   </main>
 
-  <script src="../js/admin.js"></script>
+  <!-- Script JavaScript intégré -->
+  <script>
+    const form = document.getElementById('addSlotForm');
+    const tableBody = document.querySelector('#slotsTable tbody');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const day = document.getElementById('day').value;
+      const time = document.getElementById('time').value;
+      const subject = document.getElementById('subject').value;
+
+      const row = document.createElement('tr');
+      row.innerHTML = \`
+        <td>\${day}</td>
+        <td>\${time}</td>
+        <td>\${subject}</td>
+        <td><button onclick="deleteRow(this)">❌ Supprimer</button></td>
+      \`;
+      tableBody.appendChild(row);
+
+      form.reset();
+    });
+
+    function deleteRow(btn) {
+      const row = btn.closest('tr');
+      row.remove();
+    }
+
+    function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text("Créneaux réservés", 14, 15);
+      doc.autoTable({ html: '#slotsTable', startY: 20 });
+      doc.save("creneaux.pdf");
+    }
+  </script>
 </body>
 </html>
