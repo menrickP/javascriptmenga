@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Système de Gestion des Emplois du Temps</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
             background-color: #eef2f3;
             color: #333;
         }
@@ -16,27 +14,6 @@
             background: #4CAF50;
             color: white;
             padding: 15px;
-            text-align: center;
-        }
-        nav ul {
-            list-style: none;
-            padding: 0;
-        }
-        nav ul li {
-            display: inline;
-            margin: 0 15px;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s;
-        }
-        nav a:hover {
-            color: #ffeb3b;
-        }
-        main {
-            padding: 20px;
             text-align: center;
         }
         footer {
@@ -51,14 +28,14 @@
     <header>
         <h1>Gestion des Emplois du Temps</h1>
         <nav>
-            <ul>
-                <li><a href="admin.html">Administrateur</a></li>
-                <li><a href="teacher.html">Enseignant</a></li>
-                <li><a href="student.html">Étudiant</a></li>
+            <ul class="nav justify-content-center">
+                <li class="nav-item"><a class="nav-link text-white" href="admin.html">Administrateur</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="teacher.html">Enseignant</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="student.html">Étudiant</a></li>
             </ul>
         </nav>
     </header>
-    <main>
+    <main class="container mt-4 text-center">
         <h2>Bienvenue dans le SGET</h2>
         <p>Veuillez choisir votre rôle pour continuer.</p>
     </main>
