@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enseignant - SGET</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
             background-color: #eef2f3;
             color: #333;
         }
@@ -21,50 +20,17 @@
         section {
             padding: 20px;
             margin: 20px auto;
-            max-width: 600px;
             background: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        label {
-            margin: 10px 0 5px;
-        }
-        input {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #218838;
         }
         #teacherAlert {
             margin-top: 10px;
             font-weight: bold;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
+        footer {
             text-align: center;
-        }
-        th {
+            padding: 15px;
             background: #4CAF50;
             color: white;
         }
@@ -80,39 +46,38 @@
         .delete-button:hover {
             background: #c82333;
         }
-        footer {
-            text-align: center;
-            padding: 15px;
-            background: #4CAF50;
-            color: white;
-        }
     </style>
 </head>
 <body>
     <header>
         <h1>Gestion des Emplois du Temps - Enseignant</h1>
     </header>
-    <main>
+    <main class="container mt-4">
         <section>
             <h2>Réserver un Créneau</h2>
-            <form id="reservationForm">
+            <form id="reservationForm" class="form-group">
                 <label for="date">Date :</label>
-                <input type="date" id="date" required>
+                <input type="date" id="date" class="form-control" required>
                 <label for="time">Heure :</label>
-                <input type="time" id="time" required>
+                <select id="time" class="form-control" required>
+                    <option value="">Sélectionnez une plage horaire</option>
+                    <option value="07:30">07h30 - 11h30</option>
+                    <option value="13:00">13h00 - 17h00</option>
+                </select>
                 <label for="courseTitle">Intitulé du Cours :</label>
-                <input type="text" id="courseTitle" required>
+                <input type="text" id="courseTitle" class="form-control" required>
                 <label for="teacherName">Enseignant :</label>
-                <input type="text" id="teacherName" required>
+                <input type="text" id="teacherName" class="form-control" required>
                 <label for="room">Salle :</label>
-                <input type="text" id="room" required>
-                <button type="submit">Réserver</button>
+                <input type="text" id="room" class="form-control" required>
+                <button type="submit" class="btn btn-success mt-2">Réserver</button>
             </form>
-            <div id="teacherAlert"></div>
+            <div id="teacherAlert" class="alert"></div>
         </section>
         <section>
             <h2>Mon Emploi du Temps</h2>
-            <table>
+            <button id="downloadPdf" class="btn btn-primary mb-3">Télécharger l'Emploi du Temps en PDF</button>
+            <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th>Jour</th>
