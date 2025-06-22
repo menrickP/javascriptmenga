@@ -1,86 +1,166 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tableau de bord Enseignant</title>
-  <link rel="stylesheet" href="styles.css">
-    <script src="script.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enseignant - SGET</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #eef2f3;
+            color: #333;
+        }
+        header {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        section {
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin: 10px 0 5px;
+        }
+        input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #218838;
+        }
+        #teacherAlert {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background: #4CAF50;
+            color: white;
+        }
+        .delete-button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .delete-button:hover {
+            background: #c82333;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #4CAF50;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Tableau de bord Enseignant</h1>
-  </header>
-  <nav>
-    <a href="student.html">Étudiant</a>
-    <a href="teacher.html" class="active">Enseignant</a>
-    <a href="admin.html">Administrateur</a>
-  </nav>
-  <main>
-    <section>
-      <h2>Réserver un créneau</h2>
-      <form id="reservationForm">
-        <label for="day">Jour :</label>
-        <select id="day" required>
-          <option value="">-- Choisir --</option>
-          <option>Lundi</option>
-          <option>Mardi</option>
-          <option>Jeudi</option>
-          <option>Vendredi</option>
-        </select>
-        <label for="time">Heure :</label>
-        <input type="time" id="time" required>
-        <label for="subject">Matière :</label>
-        <input type="text" id="subject" required placeholder="Ex: Mathématiques">
-        <button type="submit">Réserver</button>
-      </form>
-    </section>
-
-    <section>
-      <h2>Emploi du temps</h2>
-      <table id="emploiTable">
-        <thead>
-          <tr>
-            <th>Jour</th>
-            <th>Heure</th>
-            <th>Matière</th>
-          </tr>
-        </thead>
-        <tbody id="teacherTableBody"></tbody>
-      </table>
-    </section>
-  </main>
-
-  <script>
-    const form = document.getElementById("reservationForm");
-    const tbodyId = "teacherTableBody"; // ID of the tbody in teacher.html
-
-    document.addEventListener('DOMContentLoaded', function() {
-        loadTimetable(tbodyId);
-    });
-
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
-      const day = document.getElementById("day").value;
-      const time = document.getElementById("time").value;
-      const subject = document.getElementById("subject").value;
-
-      const slots = JSON.parse(localStorage.getItem("creneaux")) || [];
-      const isDuplicate = slots.some(slot => slot.day === day && slot.time === time);
-
-      if (isDuplicate) {
-        alert(`Le créneau pour ${day} à ${time} est déjà réservé.`);
-        return;
-      }
-
-      const newSlot = { day, time, subject };
-      slots.push(newSlot);
-      localStorage.setItem("creneaux", JSON.stringify(slots));
-
-      loadTimetable(tbodyId); // Refresh the table
-      alert("Créneau réservé !");
-      form.reset();
-    });
-  </script>
+    <header>
+        <h1>Gestion des Emplois du Temps - Enseignant</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Réserver un Créneau</h2>
+            <form id="reservationForm">
+                <label for="date">Date :</label>
+                <input type="date" id="date" required>
+                <label for="time">Heure :</label>
+                <input type="time" id="time" required>
+                <label for="courseTitle">Intitulé du Cours :</label>
+                <input type="text" id="courseTitle" required>
+                <label for="teacherName">Enseignant :</label>
+                <input type="text" id="teacherName" required>
+                <label for="room">Salle :</label>
+                <input type="text" id="room" required>
+                <button type="submit">Réserver</button>
+            </form>
+            <div id="teacherAlert"></div>
+        </section>
+        <section>
+            <h2>Mon Emploi du Temps</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Jour</th>
+                        <th>1ère Période (7h30 - 11h30)</th>
+                        <th>Pause (11h30 - 13h)</th>
+                        <th>2ème Période (13h - 17h)</th>
+                    </tr>
+                </thead>
+                <tbody id="teacherSchedule">
+                    <tr>
+                        <td>Lundi</td>
+                        <td id="mon_lundi"></td>
+                        <td rowspan="6">Pause</td>
+                        <td id="mon_lundi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Mardi</td>
+                        <td id="mon_mardi"></td>
+                        <td id="mon_mardi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Mercredi</td>
+                        <td id="mon_mercredi"></td>
+                        <td id="mon_mercredi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Jeudi</td>
+                        <td id="mon_jeudi"></td>
+                        <td id="mon_jeudi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Vendredi</td>
+                        <td id="mon_vendredi"></td>
+                        <td id="mon_vendredi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Samedi</td>
+                        <td id="mon_samedi"></td>
+                        <td id="mon_samedi_apres"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Système de Gestion des Emplois du Temps</p>
+    </footer>
+    <script src="data.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
