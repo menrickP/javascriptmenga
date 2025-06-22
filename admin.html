@@ -3,93 +3,61 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tableau de bord Administrateur</title>
-  <link rel="stylesheet" href="../css/styles.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+  <title>Administrateur</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: Arial, sans-serif;
+      background: #eef1f7;
       margin: 0;
       padding: 0;
-      background: linear-gradient(to bottom right, #f0f4f8, #dfe9f3);
-      color: #333;
     }
-
     header {
       background-color: #3f51b5;
       color: white;
-      padding: 20px 0;
+      padding: 20px;
       text-align: center;
     }
-
-    main {
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
-    h2 {
-      margin-top: 40px;
-      color: #3f51b5;
-      font-size: 22px;
+    nav {
+      background: #283593;
       text-align: center;
+      padding: 10px 0;
     }
-
-    .form-container, .actions {
-      background-color: white;
-      padding: 30px;
-      margin-top: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
       font-weight: bold;
     }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+    main {
+      max-width: 1000px;
+      margin: 30px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
     }
-
-    button {
-      display: inline-block;
-      background-color: #4CAF50;
-      color: white;
-      padding: 12px 24px;
-      margin: 5px 0;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #388e3c;
-    }
-
     table {
       width: 100%;
-      margin-top: 15px;
       border-collapse: collapse;
-      background-color: white;
+      margin-top: 20px;
     }
-
     th, td {
       border: 1px solid #ccc;
       padding: 10px;
       text-align: center;
     }
-
     th {
-      background-color: #e3eaf2;
+      background-color: #e0e0e0;
+    }
+    #exportBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #3f51b5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -97,98 +65,49 @@
   <header>
     <h1>Tableau de bord Administrateur</h1>
   </header>
-
+  <nav>
+    <a href="student.html">Étudiant</a>
+    <a href="teacher.html">Enseignant</a>
+    <a href="admin.html">Administrateur</a>
+  </nav>
   <main>
-    <!-- Formulaire d'ajout de créneau -->
-    <section class="form-container">
-      <h2>Ajouter un créneau</h2>
-      <form id="addSlotForm">
-        <label for="day">Jour :</label>
-        <select id="day" required>
-          <option value="">-- Choisir un jour --</option>
-          <option>Lundi</option>
-          <option>Mardi</option>
-          <option>Mercredi</option>
-          <option>Jeudi</option>
-          <option>Vendredi</option>
-          <option>Samedi</option>
-        </select>
-
-        <label for="time">Heure :</label>
-        <input type="time" id="time" required>
-
-        <label for="subject">Matière :</label>
-        <input type="text" id="subject" required placeholder="Ex: Physique">
-
-        <button type="submit">➕ Ajouter</button>
-      </form>
-    </section>
-
-    <!-- Liste des créneaux -->
-    <section class="actions">
-      <h2>Liste des créneaux</h2>
-      <table id="slotsTable">
-        <thead>
-          <tr>
-            <th>Jour</th>
-            <th>Heure</th>
-            <th>Matière</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Créneaux ajoutés dynamiquement -->
-        </tbody>
-      </table>
-      <button onclick="exportPDF()">📤 Exporter en PDF</button>
-    </section>
-
-    <!-- Utilisateurs fictifs -->
-    <section class="actions">
-      <h2>Utilisateurs (fictifs)</h2>
-      <ul id="userList">
-        <li>👤 Menga Patrick - Étudiant</li>
-        <li>👤 Modjom princesse - Enseignante</li>
-        <li>👤 Menga Menga - Administrateur</li>
-      </ul>
-    </section>
+    <h2>Créneaux enregistrés</h2>
+    <table id="creneauTable">
+      <thead>
+        <tr>
+          <th>Jour</th>
+          <th>Heure</th>
+          <th>Matière</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rempli dynamiquement -->
+      </tbody>
+    </table>
+    <button id="exportBtn">📄 Exporter en PDF</button>
   </main>
 
-  <!-- Script JavaScript intégré -->
   <script>
-    const form = document.getElementById('addSlotForm');
-    const tableBody = document.querySelector('#slotsTable tbody');
+    const data = JSON.parse(localStorage.getItem("creneaux") || "[]");
+    const tbody = document.querySelector("#creneauTable tbody");
 
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const day = document.getElementById('day').value;
-      const time = document.getElementById('time').value;
-      const subject = document.getElementById('subject').value;
-
-      const row = document.createElement('tr');
+    data.forEach(item => {
+      const row = document.createElement("tr");
       row.innerHTML = \`
-        <td>\${day}</td>
-        <td>\${time}</td>
-        <td>\${subject}</td>
-        <td><button onclick="deleteRow(this)">❌ Supprimer</button></td>
+        <td>\${item.day}</td>
+        <td>\${item.time}</td>
+        <td>\${item.subject}</td>
       \`;
-      tableBody.appendChild(row);
-
-      form.reset();
+      tbody.appendChild(row);
     });
 
-    function deleteRow(btn) {
-      const row = btn.closest('tr');
-      row.remove();
-    }
-
-    function exportPDF() {
+    document.getElementById("exportBtn").addEventListener("click", () => {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      doc.text("Créneaux réservés", 14, 15);
-      doc.autoTable({ html: '#slotsTable', startY: 20 });
-      doc.save("creneaux.pdf");
-    }
+      doc.text("Liste des créneaux", 14, 15);
+      doc.autoTable({ html: "#creneauTable", startY: 20 });
+      doc.save("creneaux_admin.pdf");
+    });
   </script>
 </body>
 </html>
