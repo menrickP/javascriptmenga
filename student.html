@@ -5,12 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tableau de bord Étudiant</title>
   <link rel="stylesheet" href="../css/styles.css" />
-
-  <!-- Bibliothèques PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-
-  <!-- Styles intégrés (ou déplacer dans styles.css si tu préfères) -->
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -19,27 +15,23 @@
       background: linear-gradient(to bottom right, #f0f4f8, #dfe9f3);
       color: #333;
     }
-
     header {
       background-color: #3f51b5;
       color: white;
       padding: 20px 0;
       text-align: center;
     }
-
     main {
       max-width: 1000px;
       margin: 30px auto;
       padding: 0 20px;
     }
-
     h2 {
       margin-top: 40px;
       color: #3f51b5;
       font-size: 22px;
       text-align: center;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
@@ -47,18 +39,14 @@
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       background-color: white;
     }
-
     th, td {
       padding: 12px;
       border: 1px solid #ccc;
       text-align: center;
     }
-
     th {
       background-color: #e3eaf2;
-      color: #333;
     }
-
     #downloadButton {
       display: block;
       margin: 30px auto;
@@ -69,9 +57,7 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s ease;
     }
-
     #downloadButton:hover {
       background-color: #388e3c;
     }
@@ -83,7 +69,6 @@
   </header>
 
   <main>
-    <!-- Emploi du temps -->
     <section>
       <h2>Emploi du temps</h2>
       <table id="emploiDuTempsTable">
@@ -99,18 +84,38 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Les lignes seront ajoutées dynamiquement -->
+          <!-- Généré par JS -->
         </tbody>
       </table>
     </section>
 
-    <!-- Bouton PDF -->
     <section>
       <h2>Télécharger l'emploi du temps</h2>
       <button id="downloadButton">📄 Télécharger en PDF</button>
     </section>
   </main>
 
-  <script src="../js/student.js"></script>
+  <script>
+    const tableBody = document.querySelector("#emploiDuTempsTable tbody");
+    const horaires = ["08:00-10:00", "10:15-12:15", "13:00-15:00"];
+    const matieres = [
+      ["Math", "Anglais", "Physique", "SVT", "EPS", "Libre"],
+      ["Hist-Géo", "Math", "Info", "Libre", "Anglais", "Libre"],
+      ["EPS", "Libre", "Libre", "Libre", "Libre", "Libre"]
+    ];
+    horaires.forEach((horaire, i) => {
+      const row = document.createElement("tr");
+      row.innerHTML = \`<td>\${horaire}</td>\` + matieres[i].map(m => \`<td>\${m}</td>\`).join("");
+      tableBody.appendChild(row);
+    });
+
+    document.getElementById("downloadButton").addEventListener("click", () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text("Emploi du temps", 14, 15);
+      doc.autoTable({ html: "#emploiDuTempsTable", startY: 20 });
+      doc.save("emploi_du_temps.pdf");
+    });
+  </script>
 </body>
 </html>
