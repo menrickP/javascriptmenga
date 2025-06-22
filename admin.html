@@ -36,7 +36,7 @@
       text-align: center;
     }
 
-    .form-container, .actions, .admin-actions {
+    .form-container, .actions {
       background-color: white;
       padding: 30px;
       margin-top: 20px;
@@ -56,7 +56,6 @@
       margin-bottom: 15px;
       border: 1px solid #ccc;
       border-radius: 6px;
-      box-sizing: border-box;
     }
 
     button {
@@ -91,14 +90,6 @@
 
     th {
       background-color: #e3eaf2;
-    }
-
-    .admin-actions button {
-      display: block;
-      width: 100%;
-      padding: 15px;
-      margin-bottom: 15px;
-      font-size: 16px;
     }
   </style>
 </head>
@@ -152,22 +143,13 @@
       <button onclick="exportPDF()">📤 Exporter en PDF</button>
     </section>
 
-    <!-- Boutons d'action supplémentaires -->
-    <section class="admin-actions">
-      <h2>Gestion de la plateforme</h2>
-      <button onclick="alert('Créneau ajouté')">➕ Ajouter un créneau</button>
-      <button onclick="alert('Créneaux supprimés')">🗑 Supprimer un créneau</button>
-      <button onclick="alert('Utilisateurs consultés')">👥 Gérer les utilisateurs</button>
-      <button onclick="alert('Export lancé')">📤 Exporter les données</button>
-    </section>
-
     <!-- Utilisateurs fictifs -->
     <section class="actions">
       <h2>Utilisateurs (fictifs)</h2>
       <ul id="userList">
-        <li>👤 Jean Dupont - Étudiant</li>
-        <li>👤 Marie Yao - Enseignante</li>
-        <li>👤 Admin Système - Administrateur</li>
+        <li>👤 MENRICK MENGA - Étudiant</li>
+        <li>👤 MENGA MENGA P - Enseignante</li>
+        <li>👤 MENGA CHANCE SHERYDAN - Administrateur</li>
       </ul>
     </section>
   </main>
@@ -184,12 +166,12 @@
       const subject = document.getElementById('subject').value;
 
       const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${day}</td>
-        <td>${time}</td>
-        <td>${subject}</td>
+      row.innerHTML = \`
+        <td>\${day}</td>
+        <td>\${time}</td>
+        <td>\${subject}</td>
         <td><button onclick="deleteRow(this)">❌ Supprimer</button></td>
-      `;
+      \`;
       tableBody.appendChild(row);
 
       form.reset();
