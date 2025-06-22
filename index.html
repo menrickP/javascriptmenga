@@ -1,65 +1,69 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Choisissez votre profil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système de Gestion des Emplois du Temps</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to bottom right, #eef2f3, #8e9eab);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .container {
-            background-color: #ffffffdd;
-            padding: 40px 60px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            text-align: center;
-        }
-
-        h1 {
-            margin-bottom: 30px;
-            font-size: 28px;
+            background-color: #eef2f3;
             color: #333;
         }
-
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .options button {
-            padding: 15px 25px;
-            font-size: 18px;
-            border: none;
-            border-radius: 8px;
-            background-color: #4a90e2;
+        header {
+            background: #4CAF50;
             color: white;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+            padding: 15px;
+            text-align: center;
         }
-
-        .options button:hover {
-            background-color: #357ab8;
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        nav a:hover {
+            color: #ffeb3b;
+        }
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #4CAF50;
+            color: white;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Qui êtes-vous ?</h1>
-        <div class="options">
-            <button onclick="location.href='student.html'">🎓 Étudiant</button>
-            <button onclick="location.href='teacher.html'">📚 Enseignant</button>
-            <button onclick="location.href='admin.html'">🛠️ Administrateur</button>
-        </div>
-    </div>
+    <header>
+        <h1>Gestion des Emplois du Temps</h1>
+        <nav>
+            <ul>
+                <li><a href="admin.html">Administrateur</a></li>
+                <li><a href="teacher.html">Enseignant</a></li>
+                <li><a href="student.html">Étudiant</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h2>Bienvenue dans le SGET</h2>
+        <p>Veuillez choisir votre rôle pour continuer.</p>
+    </main>
+    <footer>
+        <p>&copy; 2025 Système de Gestion des Emplois du Temps</p>
+    </footer>
 </body>
 </html>
