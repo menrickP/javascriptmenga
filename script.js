@@ -85,5 +85,86 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSchedule(); // Mettre à jour l'affichage
     }
 
+    document.getElementById('downloadPdf').addEventListener('click', () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.text("Emploi du Temps", 20, 20);
+        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+        
+        let y = 30;
+        const days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+
+        days.forEach(day => {
+            doc.text(day, 20, y);
+            y += 10;
+
+            const morningReservations = reservations.filter(reservation => {
+                const reservationDate = new Date(reservation.date);
+                return reservationDate.toLocaleString('fr-FR', { weekday: 'long' }) === day && reservation.time >= "07:30" && reservation.time < "11:30";
+            });
+
+            const afternoonReservations = reservations.filter(reservation => {
+                const reservationDate = new Date(reservation.date);
+                return reservationDate.toLocaleString('fr-FR', { weekday: 'long' }) === day && reservation.time >= "13:00" && reservation.time < "17:00";
+            });
+
+            doc.text("1ère Période:", 20, y);
+            morningReservations.forEach(reservation => {
+                doc.text(`${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`, 30, y += 10);
+            });
+            y += 10;
+
+            doc.text("2ème Période:", 20, y);
+            afternoonReservations.forEach(reservation => {
+                doc.text(`${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`, 30, y += 10);
+            });
+            y += 10;
+        });
+
+        doc.save("emploi_du_temps.pdf");
+    });
+
+    // Logique pour l'étudiant
+    document.getElementById('downloadStudentPdf').addEventListener('click', () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.text("Mon Emploi du Temps", 20, 20);
+        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+        
+        let y = 30;
+        const days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+
+        days.forEach(day => {
+            doc.text(day, 20, y);
+            y += 10;
+
+            const morningReservations = reservations.filter(reservation => {
+                const reservationDate = new Date(reservation.date);
+                return reservationDate.toLocaleString('fr-FR', { weekday: 'long' }) === day && reservation.time >= "07:30" && reservation.time < "11:30";
+            });
+
+            const afternoonReservations = reservations.filter(reservation => {
+                const reservationDate = new Date(reservation.date);
+                return reservationDate.toLocaleString('fr-FR', { weekday: 'long' }) === day && reservation.time >= "13:00" && reservation.time < "17:00";
+            });
+
+            doc.text("1ère Période:", 20, y);
+            morningReservations.forEach(reservation => {
+                doc.text(`${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`, 30, y += 10);
+            });
+            y += 10;
+
+            doc.text("2ème Période:", 20, y);
+            afternoonReservations.forEach(reservation => {
+                doc.text(`${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`, 30, y += 10);
+            });
+            y += 10;
+        });
+
+        doc.save("emploi_du_temps_etudiant.pdf");
+    });
+
     updateSchedule();
 });
