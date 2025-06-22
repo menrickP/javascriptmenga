@@ -1,169 +1,86 @@
-/* Reset CSS pour éviter les styles par défaut divergents */
-body, h1, h2, p, ul, li, form, input, select, button {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tableau de bord Enseignant</title>
+  <link rel="stylesheet" href="styles.css">
+    <script src="script.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Tableau de bord Enseignant</h1>
+  </header>
+  <nav>
+    <a href="student.html">Étudiant</a>
+    <a href="teacher.html" class="active">Enseignant</a>
+    <a href="admin.html">Administrateur</a>
+  </nav>
+  <main>
+    <section>
+      <h2>Réserver un créneau</h2>
+      <form id="reservationForm">
+        <label for="day">Jour :</label>
+        <select id="day" required>
+          <option value="">-- Choisir --</option>
+          <option>Lundi</option>
+          <option>Mardi</option>
+          <option>Jeudi</option>
+          <option>Vendredi</option>
+        </select>
+        <label for="time">Heure :</label>
+        <input type="time" id="time" required>
+        <label for="subject">Matière :</label>
+        <input type="text" id="subject" required placeholder="Ex: Mathématiques">
+        <button type="submit">Réserver</button>
+      </form>
+    </section>
 
-/* Styles de base pour le corps */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-}
+    <section>
+      <h2>Emploi du temps</h2>
+      <table id="emploiTable">
+        <thead>
+          <tr>
+            <th>Jour</th>
+            <th>Heure</th>
+            <th>Matière</th>
+          </tr>
+        </thead>
+        <tbody id="teacherTableBody"></tbody>
+      </table>
+    </section>
+  </main>
 
-/* Header */
-header {
-    background-color: #007bff;
-    color: white;
-    padding: 20px 15px;
-    text-align: center;
-    border-bottom: 5px solid #0056b3;
-}
+  <script>
+    const form = document.getElementById("reservationForm");
+    const tbodyId = "teacherTableBody"; // ID of the tbody in teacher.html
 
-header h1 {
-    font-size: 2rem;
-    margin: 0;
-}
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTimetable(tbodyId);
+    });
 
-/* Mise en page globale */
-main {
-    padding: 20px;
-    max-width: 800px;
-    margin: auto;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const day = document.getElementById("day").value;
+      const time = document.getElementById("time").value;
+      const subject = document.getElementById("subject").value;
 
-/* Sections */
-section {
-    margin-bottom: 30px;
-}
+      const slots = JSON.parse(localStorage.getItem("creneaux")) || [];
+      const isDuplicate = slots.some(slot => slot.day === day && slot.time === time);
 
-section h2 {
-    margin-bottom: 15px;
-    color: #0056b3;
-}
+      if (isDuplicate) {
+        alert(`Le créneau pour ${day} à ${time} est déjà réservé.`);
+        return;
+      }
 
-/* Formulaire de connexion et réservation */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+      const newSlot = { day, time, subject };
+      slots.push(newSlot);
+      localStorage.setItem("creneaux", JSON.stringify(slots));
 
-form label {
-    font-size: 1rem;
-    margin-bottom: 5px;
-}
-
-form input, form select, form button {
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-form input:focus, form select:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-form button {
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    border: none;
-    transition: background-color 0.3s ease;
-}
-
-form button:hover {
-    background-color: #0056b3;
-}
-
-/* Tableaux pour l'affichage des données */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-table th, table td {
-    border: 1px solid #ddd;
-    text-align: left;
-    padding: 10px;
-}
-
-table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-}
-
-table tr:hover {
-    background-color: #f9f9f9;
-}
-
-/* Boutons génériques */
-button {
-    padding: 10px 15px;
-    font-size: 1rem;
-    border-radius: 5px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-/* Liens */
-a {
-    color: #007bff;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-a:hover {
-    color: #0056b3;
-}
-
-/* Conteneurs et messages d'erreur */
-.login-container, .reservation-container {
-    max-width: 400px;
-    margin: auto;
-    padding: 20px;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.error-message {
-    color: #d9534f;
-    font-size: 0.9rem;
-    margin-top: 10px;
-    display: none;
-}
-
-/* Responsivité */
-@media screen and (max-width: 768px) {
-    main {
-        padding: 10px;
-    }
-
-    form input, form select, form button {
-        font-size: 0.9rem;
-    }
-
-    header h1 {
-        font-size: 1.5rem;
-    }
-}
-
+      loadTimetable(tbodyId); // Refresh the table
+      alert("Créneau réservé !");
+      form.reset();
+    });
+  </script>
+</body>
+</html>
