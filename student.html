@@ -1,113 +1,95 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tableau de bord Étudiant</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #eef1f7;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: #3f51b5;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    nav {
-      background: #283593;
-      text-align: center;
-      padding: 10px 0;
-    }
-    nav a {
-      color: white;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    main {
-      max-width: 1000px;
-      margin: 30px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: center;
-    }
-    th {
-      background-color: #e0e0e0;
-    }
-    #downloadButton {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Étudiant - SGET</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #eef2f3;
+            color: #333;
+        }
+        header {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        section {
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #4CAF50;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Tableau de bord Étudiant</h1>
-  </header>
-  <nav>
-    <a href="student.html">Étudiant</a>
-    <a href="teacher.html">Enseignant</a>
-    <a href="admin.html">Administrateur</a>
-  </nav>
-  <main>
-    <h2>Emploi du temps</h2>
-    <table id="emploiTable">
-      <thead>
-        <tr>
-          <th>Jour</th>
-          <th>Heure</th>
-          <th>Matière</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Dynamique -->
-      </tbody>
-    </table>
-    <button id="downloadButton">📄 Télécharger en PDF</button>
-  </main>
-
-  <script>
-    const data = JSON.parse(localStorage.getItem("creneaux") || "[]");
-    const tbody = document.querySelector("#emploiTable tbody");
-
-    data.forEach(item => {
-      const row = document.createElement("tr");
-      row.innerHTML = \`
-        <td>\${item.day}</td>
-        <td>\${item.time}</td>
-        <td>\${item.subject}</td>
-      \`;
-      tbody.appendChild(row);
-    });
-
-    document.getElementById("downloadButton").addEventListener("click", () => {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      doc.text("Emploi du temps", 14, 15);
-      doc.autoTable({ html: "#emploiTable", startY: 20 });
-      doc.save("emploi_du_temps.pdf");
-    });
-  </script>
+    <header>
+        <h1>Gestion des Emplois du Temps - Étudiant</h1>
+    </header>
+    <main>
+        <section>
+            <h2>Mon Emploi du Temps</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Jour</th>
+                        <th>1ère Période (7h30 - 11h30)</th>
+                        <th>Pause (11h30 - 13h)</th>
+                        <th>2ème Période (13h - 17h)</th>
+                    </tr>
+                </thead>
+                <tbody id="studentSchedule">
+                    <tr>
+                        <td>Lundi</td>
+                        <td id="student_lundi"></td>
+                        <td rowspan="6">Pause</td>
+                        <td id="student_lundi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Mardi</td>
+                        <td id="student_mardi"></td>
+                        <td id="student_mardi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Mercredi</td>
+                        <td id="student_mercredi"></td>
+                        <td id="student_mercredi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Jeudi</td>
+                        <td id="student_jeudi"></td>
+                        <td id="student_jeudi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Vendredi</td>
+                        <td id="student_vendredi"></td>
+                        <td id="student_vendredi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Samedi</td>
+                        <td id="student_samedi"></td>
+                        <td id="student_samedi_apres"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Système de Gestion des Emplois du Temps</p>
+    </footer>
+    <script src="data.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
