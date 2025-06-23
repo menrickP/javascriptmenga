@@ -29,9 +29,11 @@
         <h1>Gestion des Emplois du Temps - Administrateur</h1>
     </header>
     <main class="container mt-4">
+        <h3>Date du Jour : <span id="currentDate"></span></h3>
+        
         <section>
-            <h2>Ajouter un Créneau</h2>
-            <form id="addSlotForm" class="form-group">
+            <h2>Gérer les Créneaux</h2>
+            <form id="manageSlotsForm" class="form-group">
                 <label for="slotDate">Date :</label>
                 <input type="date" id="slotDate" class="form-control" required>
                 <label for="slotTime">Heure :</label>
@@ -42,11 +44,28 @@
                 </select>
                 <button type="submit" class="btn btn-success mt-2">Ajouter Créneau</button>
             </form>
-            <div id="adminAlert" class="alert"></div>
+            <div id="manageAlert" class="alert"></div>
         </section>
+        
         <section>
             <h2>Créneaux Réservés</h2>
             <div id="adminSchedule" class="mt-3"></div>
+        </section>
+
+        <section>
+            <h2>Gérer les Utilisateurs</h2>
+            <form id="userForm" class="form-group">
+                <label for="userName">Nom :</label>
+                <input type="text" id="userName" class="form-control" required>
+                <label for="userRole">Rôle :</label>
+                <select id="userRole" class="form-control" required>
+                    <option value="enseignant">Enseignant</option>
+                    <option value="etudiant">Étudiant</option>
+                </select>
+                <button type="submit" class="btn btn-success mt-2">Ajouter Utilisateur</button>
+            </form>
+            <div id="userAlert" class="alert"></div>
+            <div id="userList" class="mt-3"></div>
         </section>
     </main>
     <footer>
