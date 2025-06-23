@@ -11,6 +11,106 @@ document.addEventListener('DOMContentLoaded', () => {
     // Afficher la date du jour
     document.getElementById('currentDate').textContent = new Date().toLocaleDateString('fr-FR');
 
+    // Fonction pour mettre à jour l'emploi du temps
+    function updateSchedule() {
+        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+        const teacherSchedule = {
+            "Lundi": { "morning": [], "afternoon": [] },
+            "Mardi": { "morning": [], "afternoon": [] },
+            "Mercredi": { "morning": [], "afternoon": [] },
+            "Jeudi": { "morning": [], "afternoon": [] },
+            "Vendredi": { "morning": [], "afternoon": [] },
+            "Samedi": { "morning": [], "afternoon": [] },
+        };
+
+        // Réinitialiser l'emploi du temps
+        for (let day in teacherSchedule) {
+            teacherSchedule[day].morning = [];
+            teacherSchedule[day].afternoon = [];
+        }
+
+        // Remplir l'emploi du temps avec les réservations
+        reservations.forEach((reservation) => {
+            const reservationDate = new Date(reservation.date);
+            const dayName = reservationDate.toLocaleString('fr-FR', { weekday: 'long' });
+            const time = reservation.time;
+
+            const courseInfo = `${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`;
+
+            if (time === "07:30") {
+                teacherSchedule[dayName].morning.push(courseInfo);
+            } else if (time === "13:00") {
+                teacherSchedule[dayName].afternoon.push(courseInfo);
+            }
+        });
+
+        // Mettre à jour le tableau sur chaque page
+        for (let day in teacherSchedule) {
+            const morningCell = document.getElementById(`mon_${day.toLowerCase()}`);
+            const afternoonCell = document.getElementById(`mon_${day.toLowerCase()}_apres`);
+
+            morningCell.innerHTML = teacherSchedule[day].morning.length > 0 
+                ? teacherSchedule[day].morning.join('<br>') 
+                : "Libre";
+
+            afternoonCell.innerHTML = teacherSchedule[day].afternoon.length > 0 
+                ? teacherSchedule[day].afternoon.join('<br>') 
+                : "Libre";
+        }
+    }
+
+    // Fonction pour générer le PDF de l'emploi du temps
+    function downloadPDF() {
+        const doc = new jsPDF();
+        doc.setFontSize(18);
+        doc.text("Emploi du Temps", 14, 22);
+        doc.setFontSize(12);
+
+        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+        const scheduleData = {};
+
+        // Remplir le scheduleData avec les réservations
+        reservations.forEach(reservation => {
+            const date = new Date(reservation.date);
+            const dayName = date.toLocaleString('fr-FR', { weekday: 'long' });
+            const time = reservation.time;
+
+            if (!scheduleData[dayName]) {
+                scheduleData[dayName] = { morning: [], afternoon: [] };
+            }
+
+            const courseInfo = `${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`;
+
+            if (time === "07:30") {
+                scheduleData[dayName].morning.push(courseInfo);
+            } else if (time === "13:00") {
+                scheduleData[dayName].afternoon.push(courseInfo);
+            }
+        });
+
+        let y = 30; // Position verticale pour le texte
+        for (const [day, slots] of Object.entries(scheduleData)) {
+            doc.text(day, 14, y);
+            y += 10;
+
+            doc.text("1ère Période (7h30 - 11h30):", 14, y);
+            doc.text(slots.morning.length > 0 ? slots.morning.join(', ') : "Libre", 14, y + 5);
+            y += 10;
+
+            doc.text("2ème Période (13h - 17h):", 14, y);
+            doc.text(slots.afternoon.length > 0 ? slots.afternoon.join(', ') : "Libre", 14, y + 5);
+            y += 15;
+        }
+
+        doc.save("emploi_du_temps.pdf");
+    }
+
+    // Écouteur d'événements pour le bouton de téléchargement
+    const downloadButton = document.getElementById('downloadPdf');
+    if (downloadButton) {
+        downloadButton.addEventListener('click', downloadPDF);
+    }
+
     // Fonction pour afficher les créneaux réservés dans admin.html
     function updateAdminSchedule() {
         const slots = JSON.parse(localStorage.getItem('slots')) || [];
@@ -81,54 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
             updateSchedule();
         }
     });
-
-    // Fonction pour mettre à jour l'emploi du temps de l'enseignant
-    function updateSchedule() {
-        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-        const teacherSchedule = {
-            "Lundi": { "morning": [], "afternoon": [] },
-            "Mardi": { "morning": [], "afternoon": [] },
-            "Mercredi": { "morning": [], "afternoon": [] },
-            "Jeudi": { "morning": [], "afternoon": [] },
-            "Vendredi": { "morning": [], "afternoon": [] },
-            "Samedi": { "morning": [], "afternoon": [] },
-        };
-
-        // Réinitialiser l'emploi du temps
-        for (let day in teacherSchedule) {
-            teacherSchedule[day].morning = [];
-            teacherSchedule[day].afternoon = [];
-        }
-
-        // Remplir l'emploi du temps avec les réservations
-        reservations.forEach((reservation) => {
-            const reservationDate = new Date(reservation.date);
-            const dayName = reservationDate.toLocaleString('fr-FR', { weekday: 'long' });
-            const time = reservation.time;
-
-            const courseInfo = `${reservation.courseTitle} - ${reservation.teacherName} (${reservation.room})`;
-
-            if (time === "07:30") {
-                teacherSchedule[dayName].morning.push(courseInfo);
-            } else if (time === "13:00") {
-                teacherSchedule[dayName].afternoon.push(courseInfo);
-            }
-        });
-
-        // Mettre à jour le tableau
-        for (let day in teacherSchedule) {
-            const morningCell = document.getElementById(`mon_${day.toLowerCase()}`);
-            const afternoonCell = document.getElementById(`mon_${day.toLowerCase()}_apres`);
-
-            morningCell.innerHTML = teacherSchedule[day].morning.length > 0 
-                ? teacherSchedule[day].morning.join('<br>') 
-                : "Libre";
-
-            afternoonCell.innerHTML = teacherSchedule[day].afternoon.length > 0 
-                ? teacherSchedule[day].afternoon.join('<br>') 
-                : "Libre";
-        }
-    }
 
     // Fonction pour gérer les utilisateurs
     userForm.addEventListener('submit', (e) => {
