@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administrateur - SGET</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <style>
         body {
             background-color: #eef2f3;
@@ -66,6 +67,54 @@
             </form>
             <div id="userAlert" class="alert"></div>
             <div id="userList" class="mt-3"></div>
+        </section>
+        
+        <section>
+            <h2>Mon Emploi du Temps</h2>
+            <button id="downloadPdf" class="btn btn-primary mb-3">Télécharger l'Emploi du Temps en PDF</button>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Jour</th>
+                        <th>1ère Période (7h30 - 11h30)</th>
+                        <th>Pause (11h30 - 13h)</th>
+                        <th>2ème Période (13h - 17h)</th>
+                    </tr>
+                </thead>
+                <tbody id="teacherSchedule">
+                    <tr>
+                        <td>Lundi</td>
+                        <td id="mon_lundi"></td>
+                        <td rowspan="6">Pause</td>
+                        <td id="mon_lundi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Mardi</td>
+                        <td id="mon_mardi"></td>
+                        <td id="mon_mardi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Mercredi</td>
+                        <td id="mon_mercredi"></td>
+                        <td id="mon_mercredi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Jeudi</td>
+                        <td id="mon_jeudi"></td>
+                        <td id="mon_jeudi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Vendredi</td>
+                        <td id="mon_vendredi"></td>
+                        <td id="mon_vendredi_apres"></td>
+                    </tr>
+                    <tr>
+                        <td>Samedi</td>
+                        <td id="mon_samedi"></td>
+                        <td id="mon_samedi_apres"></td>
+                    </tr>
+                </tbody>
+            </table>
         </section>
     </main>
     <footer>
