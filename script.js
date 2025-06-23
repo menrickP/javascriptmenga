@@ -1,38 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const addSlotForm = document.getElementById('addSlotForm');
-    const adminAlert = document.getElementById('adminAlert');
+    const manageSlotsForm = document.getElementById('manageSlotsForm');
+    const adminAlert = document.getElementById('manageAlert');
     const adminSchedule = document.getElementById('adminSchedule');
     const reservationForm = document.getElementById('reservationForm');
     const teacherAlert = document.getElementById('teacherAlert');
-    const teacherSchedule = {
-        "Lundi": { "morning": [], "afternoon": [] },
-        "Mardi": { "morning": [], "afternoon": [] },
-        "Mercredi": { "morning": [], "afternoon": [] },
-        "Jeudi": { "morning": [], "afternoon": [] },
-        "Vendredi": { "morning": [], "afternoon": [] },
-        "Samedi": { "morning": [], "afternoon": [] },
-    };
+    const userForm = document.getElementById('userForm');
+    const userAlert = document.getElementById('userAlert');
+    const userList = document.getElementById('userList');
+
+    // Afficher la date du jour
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('fr-FR');
 
     // Fonction pour afficher les créneaux réservés dans admin.html
     function updateAdminSchedule() {
-        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+        const slots = JSON.parse(localStorage.getItem('slots')) || [];
         adminSchedule.innerHTML = ''; // Réinitialiser l'affichage
 
-        if (reservations.length === 0) {
-            adminSchedule.innerHTML = '<p>Aucun créneau réservé.</p>';
+        if (slots.length === 0) {
+            adminSchedule.innerHTML = '<p>Aucun créneau ajouté.</p>';
             return;
         }
 
-        reservations.forEach((reservation, index) => {
-            const reservationElement = document.createElement('div');
-            reservationElement.className = 'alert alert-info d-flex justify-content-between align-items-center';
-            reservationElement.innerHTML = `
-                <div>
-                    ${reservation.date} - ${reservation.time}: ${reservation.courseTitle} (${reservation.teacherName}, ${reservation.room})
-                </div>
-                <button class="btn btn-danger btn-sm delete-slot" data-index="${index}">Supprimer</button>
-            `;
-            adminSchedule.appendChild(reservationElement);
+        slots.forEach((slot, index) => {
+            const slotElement = document.createElement('div');
+            slotElement.innerHTML = `${slot.date} - ${slot.time} <button class="btn btn-danger btn-sm delete-slot" data-index="${index}">Supprimer</button>`;
+            adminSchedule.appendChild(slotElement);
         });
 
         // Ajouter l'écouteur d'événements pour les boutons de suppression
@@ -44,28 +36,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fonction pour supprimer un créneau
     function deleteSlot(e) {
         const index = e.target.getAttribute('data-index');
-        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-        reservations.splice(index, 1); // Supprimer la réservation de la liste
-        localStorage.setItem('reservations', JSON.stringify(reservations)); // Mettre à jour le stockage local
+        const slots = JSON.parse(localStorage.getItem('slots')) || [];
+        slots.splice(index, 1); // Supprimer le créneau de la liste
+        localStorage.setItem('slots', JSON.stringify(slots)); // Mettre à jour le stockage local
         updateAdminSchedule(); // Mettre à jour l'affichage
         adminAlert.textContent = 'Créneau supprimé avec succès!';
         adminAlert.style.color = 'green';
-        updateSchedule(); // Met à jour l'emploi du temps
     }
 
     // Ajouter un créneau
-    addSlotForm.addEventListener('submit', (e) => {
+    manageSlotsForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const date = document.getElementById('slotDate').value;
         const time = document.getElementById('slotTime').value;
 
-        const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-        reservations.push({ date, time });
-        localStorage.setItem('reservations', JSON.stringify(reservations));
+        const slots = JSON.parse(localStorage.getItem('slots')) || [];
+        slots.push({ date, time });
+        localStorage.setItem('slots', JSON.stringify(slots));
         adminAlert.textContent = 'Créneau ajouté avec succès!';
         adminAlert.style.color = 'green';
         updateAdminSchedule(); // Mettre à jour l'affichage
-        updateSchedule(); // Met à jour l'emploi du temps
     });
 
     // Fonction de réservation pour l'enseignant
@@ -95,6 +85,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fonction pour mettre à jour l'emploi du temps de l'enseignant
     function updateSchedule() {
         const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+        const teacherSchedule = {
+            "Lundi": { "morning": [], "afternoon": [] },
+            "Mardi": { "morning": [], "afternoon": [] },
+            "Mercredi": { "morning": [], "afternoon": [] },
+            "Jeudi": { "morning": [], "afternoon": [] },
+            "Vendredi": { "morning": [], "afternoon": [] },
+            "Samedi": { "morning": [], "afternoon": [] },
+        };
 
         // Réinitialiser l'emploi du temps
         for (let day in teacherSchedule) {
@@ -132,7 +130,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Fonction pour gérer les utilisateurs
+    userForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('userName').value;
+        const role = document.getElementById('userRole').value;
+
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        users.push({ name, role });
+        localStorage.setItem('users', JSON.stringify(users));
+        userAlert.textContent = 'Utilisateur ajouté avec succès!';
+        userAlert.style.color = 'green';
+        updateUserDisplay();
+    });
+
+    // Fonction pour afficher les utilisateurs
+    function updateUserDisplay() {
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        userList.innerHTML = '';
+
+        users.forEach((user, index) => {
+            const userElement = document.createElement('div');
+            userElement.innerHTML = `${user.name} - ${user.role} <button class="btn btn-danger btn-sm delete-user" data-index="${index}">Supprimer</button>`;
+            userList.appendChild(userElement);
+        });
+
+        document.querySelectorAll('.delete-user').forEach(button => {
+            button.addEventListener('click', deleteUser);
+        });
+    }
+
+    // Fonction pour supprimer un utilisateur
+    function deleteUser(e) {
+        const index = e.target.getAttribute('data-index');
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        users.splice(index, 1);
+        localStorage.setItem('users', JSON.stringify(users));
+        updateUserDisplay();
+    }
+
     // Initialiser l'affichage
     updateAdminSchedule();
+    updateUserDisplay();
     updateSchedule();
 });
