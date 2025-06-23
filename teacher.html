@@ -34,18 +34,6 @@
             background: #4CAF50;
             color: white;
         }
-        .delete-button {
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 5px 10px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .delete-button:hover {
-            background: #c82333;
-        }
     </style>
 </head>
 <body>
@@ -53,6 +41,7 @@
         <h1>Gestion des Emplois du Temps - Enseignant</h1>
     </header>
     <main class="container mt-4">
+        <h3>Date du Jour : <span id="currentDate"></span></h3>
         <section>
             <h2>Réserver un Créneau</h2>
             <form id="reservationForm" class="form-group">
